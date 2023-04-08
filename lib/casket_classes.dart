@@ -1,89 +1,127 @@
-//import 'package:flutter/material.dart'; - нужно будет подгрузить
-class Color {
-  int c;
-  Color(this.c);
-}
+import 'package:flutter/material.dart';
+import 'dart:collection';
 
 //Основа для всех вычислений это Этикетка - вводится пользователем => все расчёты исходят от неё
-class KernLabel {
-  final int casketsDistance; // в сантиметрах (мб double, мб long )
+class KernLabel extends LinkedListEntry<KernLabel> {
+  final bool isImaginary;
+
+  final int distance; // в сантиметрах
   final double depth; // в метрах
   final double coreOutput; // соотношение
 
-  final Color groundType; // цвет для рейса до этикетки
+  final Color color; // цвет для рейса до этикетки
 
-  const KernLabel(
-      this.casketsDistance, this.depth, this.coreOutput, this.groundType);
-}
+  KernLabel(
+      this.isImaginary, this.distance, this.depth, this.coreOutput, this.color);
 
-/* думаю не нужно
-class CasketRow {
-}
-*/
-
-class Casket {
-  double _casketsDistance; // в сантиметрах (всегда % 100)
-  double _depth; // в метрах (глубина начала ящика) -
-
-  int _rowAmount;
-  List<KernLabel> _insideLabels;
-  KernLabel? _nextLabel;
-
-  Casket(this._casketsDistance,
-      this._depth) // или можно через factory Casket.createEmpty()
-      : _insideLabels = [],
-        _rowAmount = 0;
-
-  // sets
-  set newRowAmount(int amount) {
-    // разные проверки
-    _rowAmount = amount;
+  KernLabel? nextReal() {
+    KernLabel? curr = this.next;
+    while (curr != null && curr.isImaginary) {
+      curr = curr.next;
+    }
+    return curr;
   }
 
-  // полезные gets
-  double get averageCoreOutput => 0.5 /*функция считающая среднее ВК в ящике*/;
-  double get endDistance => _casketsDistance + _rowAmount * 100;
-  int get number => (_casketsDistance / 100).round();
+  KernLabel? nextFake() {
+    KernLabel? curr = this.next;
+    while (curr != null && !curr.isImaginary) {
+      curr = curr.next;
+    }
+    return curr;
+  }
 
-  // функции
-  String showInfo() =>
-      'dist: $_casketsDistance, dpth: $_depth, rows: $_rowAmount, lbls: ${_insideLabels.length}, next: ${_nextLabel != null}, avg: ${averageCoreOutput}';
+  KernLabel? prevReal() {
+    KernLabel? curr = this.previous;
+    while (curr != null && curr.isImaginary) {
+      curr = curr.previous;
+    }
+    return curr;
+  }
+
+  KernLabel? prevFake() {
+    KernLabel? curr = this.previous;
+    while (curr != null && !curr.isImaginary) {
+      curr = curr.previous;
+    }
+    return curr;
+  }
+
+  static double calcDepthBetween(
+      KernLabel before, KernLabel after, int onDistance) {
+    // TODO: check inputs
+    double scale =
+        (after.depth - before.depth) / (after.distance - before.distance);
+    return before.depth + (onDistance - before.distance) * scale;
+  }
+
+  static int calcDistanceBetween(
+      KernLabel before, KernLabel after, double onDepth) {
+    // TODO: check inputs
+    double scale =
+        (after.distance - before.distance) / (after.depth - before.depth);
+
+    return before.distance + ((onDepth - before.depth) * scale).round();
+  }
 }
+
+// class KernCasket {
+//   double _casketsDistance; // в сантиметрах (всегда % 100)
+//   double _depth; // в метрах (глубина начала ящика) -
+
+//   int _rowAmount;
+//   KernLabel? _nextLabel;
+
+//   Casket(this._casketsDistance,
+//       this._depth) // или можно через factory Casket.createEmpty()
+//       : _insideLabels = [],
+//         _rowAmount = 0;
+
+//   // sets
+//   set newRowAmount(int amount) {
+//     // разные проверки
+//     _rowAmount = amount;
+//   }
+
+//   // полезные gets
+//   double get averageCoreOutput => 0.5 /*функция считающая среднее ВК в ящике*/;
+//   double get endDistance => _casketsDistance + _rowAmount * 100;
+//   int get number => (_casketsDistance / 100).round();
+
+//   // функции
+//   String showInfo() =>
+//       'dist: $_casketsDistance, dpth: $_depth, rows: $_rowAmount, lbls: ${_insideLabels.length}, next: ${_nextLabel != null}, avg: ${averageCoreOutput}';
+// }
 
 // перевод от "скважина"
-class DrillHole {
-  String name;
+// class DrillHole {
+//   String name;
+//   DateTime created;
 
-  List<KernLabel> _labels;
-  List<Casket> _caskets;
-  // если что-то меняется в середине списка, то нужно пройти до конца и пересчитать все остальные
+//   // если что-то меняется в середине списка, то нужно пройти до конца и пересчитать все остальные
 
-  DrillHole(String this.name)
-      : _labels = [],
-        _caskets = [];
+//   DrillHole(String this.name)
+//       : _labels = [],
+//         _caskets = [];
 
-  // gets
-  double get depth => this._labels.last.depth;
-  int get casketsAmount => this._caskets.length;
-}
+//   // gets
+//   double get depth => this._labels.last.depth;
+//   int get casketsAmount => this._caskets.length;
+// }
 
-class TheGeoApp {
-  List<DrillHole> _drillHoles;
-  //Settings - в виде singleton
+// class TheGeoApp {
+//   List<DrillHole> _drillHoles;
+//   //Settings - в виде singleton
 
-  TheGeoApp() : _drillHoles = [];
-}
+//   TheGeoApp() : _drillHoles = [];
+// }
 
-//usage testing
-void main(List<String> args) {
-  List<KernLabel> drillHole = [];
-  double drillDepth = 0;
-  List<Casket> caskets = [];
-  double casketsDistance = 0;
+// //usage testing
+// void main(List<String> args) {
+//   List<KernLabel> drillHole = [];
+//   double drillDepth = 0;
+//   List<Casket> caskets = [];
+//   double casketsDistance = 0;
 
-  caskets.add(Casket(casketsDistance, drillDepth));
-  print(caskets.last.showInfo());
-
-  drillHole.add(KernLabel(80, 1.0, 0.5, Color(5)));
-  drillHole.add(KernLabel(70, 1.8, 1.0, Color(54)));
-}
+//   caskets.add(Casket(casketsDistance, drillDepth));
+//   print(caskets.last.showInfo());
+// }
