@@ -14,7 +14,7 @@ class RulerRowPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: отрисовка чисел
+    // отрисовка разметки
     KernLabel currLabel = _beforeLabel;
     double currDepth = KernLabel.calcDepthBetween(
             _beforeLabel, _beforeLabel.next!, _startDistance)
@@ -41,6 +41,22 @@ class RulerRowPainter extends CustomPainter {
       final Offset bot =
           Offset(size.width * (drawDist % 100) / 100, size.height);
       canvas.drawLine(top, bot, paint);
+    }
+
+    // отрисовка чисел
+    final textStyle = TextStyle(color: Colors.black, fontSize: 10);
+
+    currLabel = _beforeLabel.next!;
+    while (currLabel != _afterLabel) {
+      final textPainter = TextPainter(
+          text: TextSpan(text: '${currLabel.depth}🠗', style: textStyle),
+          textDirection: TextDirection.ltr);
+      textPainter.layout(minWidth: 0, maxWidth: size.width);
+      final Offset labelPlace = Offset(
+          size.width * (currLabel.distance % 100) / 100, size.height / 2);
+      textPainter.paint(canvas, labelPlace);
+
+      currLabel = currLabel.nextReal()!;
     }
   }
 
