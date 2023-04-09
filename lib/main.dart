@@ -1,8 +1,7 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'package:from_empty/casket_classes.dart';
 
+import 'casket_classes.dart';
 import 'casket_scheme.dart';
 
 void main() {

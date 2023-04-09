@@ -5,14 +5,21 @@ import 'dart:collection';
 class KernLabel extends LinkedListEntry<KernLabel> {
   final bool isImaginary;
 
-  final int distance; // в сантиметрах
-  final double depth; // в метрах
-  final double coreOutput; // соотношение
+  int distance; // в сантиметрах
+  double depth; // в метрах
+  double coreOutput; // соотношение
 
-  final Color color; // цвет для рейса до этикетки
+  Color color; // цвет для рейса до этикетки
 
   KernLabel(
       this.isImaginary, this.distance, this.depth, this.coreOutput, this.color);
+
+  void copyDataFrom(KernLabel other) {
+    this.distance = other.distance;
+    this.depth = other.depth;
+    this.coreOutput = other.coreOutput;
+    this.color = other.color;
+  }
 
   KernLabel? nextReal() {
     KernLabel? curr = this.next;

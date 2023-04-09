@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'casket_classes.dart';
+import 'label_setup_dialog.dart';
 
 class RulerRowPainter extends CustomPainter {
   final KernLabel _beforeLabel; // last before curr Row, not included
@@ -49,21 +50,6 @@ class RulerRowPainter extends CustomPainter {
   }
 }
 
-// class CasketCellData extends StatelessWidget {
-//   final KernLabel _reference;
-//   final bool _isLabelKeeper;
-
-//   CasketCellData(this._reference, this._isLabelKeeper);
-
-//   void
-
-//   @override
-//   Widget build(BuildContext context){
-//     if (_isLabelKeeper)
-//   }
-
-// }
-
 class CasketScheme extends StatefulWidget {
   final KernLabel _startFake;
   final KernLabel _endFake;
@@ -101,24 +87,27 @@ class CasketSchemeState extends State<CasketScheme> {
           cellDist <= rowDist + 100;
           cellDist += 10) {
         // TODO: числа в переменные
+        double toShow = KernLabel.calcDepthBetween(
+            rowEndLabel.prevReal()!, rowEndLabel, cellDist);
         if (rowEndLabel.distance <= cellDist) {
-          // TODO: создать Cell с этой KernLabel
-          tableRow.add(Container(child: TableCell(child: Text('a')))); //TODO:
+          tableRow.add(Container(
+              color: rowEndLabel.color,
+              child: Tooltip(
+                message: '$toShow',
+                child:
+                    CasketCellData(rowEndLabel, true, cellDist, redrawScheme),
+              )));
           if (rowEndLabel.nextReal() == null) {
             break;
           }
           rowEndLabel = rowEndLabel.nextReal()!;
         } else {
-          double toShow = KernLabel.calcDepthBetween(
-              rowEndLabel.prevReal()!, rowEndLabel, cellDist);
           tableRow.add(Container(
-              //TODO: onHold
               color: rowEndLabel.color,
               child: Tooltip(
                   message: '$toShow',
-                  child: TableCell(
-                    child: Text(' '),
-                  ))));
+                  child: CasketCellData(rowEndLabel, false, cellDist,
+                      redrawScheme)))); // TODO: отличия только в true/false
         }
       }
 
