@@ -34,14 +34,15 @@ class Drillhole {
       );
 
   static Drillhole fromJson(Map<String, Object?> json) => Drillhole(
-    id: json[DrillholeFields.id] as int?,
-    name: json[DrillholeFields.name] as String,
-    createdTime: DateTime.parse(json[DrillholeFields.creation_date] as String),
-  );
+        id: json[DrillholeFields.id] as int?,
+        name: json[DrillholeFields.name] as String,
+        createdTime:
+            DateTime.parse(json[DrillholeFields.creation_date] as String),
+      );
 
   Map<String, Object?> toJson() => {
-    DrillholeFields.id: id,
-    DrillholeFields.name: name,
-    DrillholeFields.creation_date: createdTime.toIso8601String(),
-  };
+        DrillholeFields.id: id,
+        DrillholeFields.name: name,
+        DrillholeFields.creation_date: createdTime.toIso8601String(),
+      };
 }

@@ -1,13 +1,12 @@
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:geoapp/DataBase/db.dart';
-import 'package:geoapp/model/drillhole.dart';
-// import 'package:geoapp/model/label.dart';
-import 'package:geoapp/edit_drillhole_page.dart';
-import 'package:geoapp/widget/labelWiget.dart';
-import 'dart:collection';
 
+import 'database/db.dart';
+import 'model/drillhole.dart';
+import 'edit_drillhole_page.dart';
+import 'widget/label_widget.dart';
 import 'casket_scheme.dart';
 import 'casket_classes.dart';
 

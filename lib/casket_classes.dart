@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:collection';
+import 'package:flutter/material.dart';
 
 //Основа для всех вычислений это Этикетка - вводится пользователем => все расчёты исходят от неё
 class KernLabel extends LinkedListEntry<KernLabel> {

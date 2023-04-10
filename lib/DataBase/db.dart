@@ -1,7 +1,8 @@
-import 'package:geoapp/model/label.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:geoapp/model/drillhole.dart';
+
+import '../model/label.dart';
+import '../model/drillhole.dart';
 
 class DrillholesDatabase {
   static final DrillholesDatabase instance = DrillholesDatabase._init();

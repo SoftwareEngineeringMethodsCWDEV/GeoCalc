@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'calcPage.dart';
-import 'drillholesPage.dart';
+
+import 'calc_page.dart';
+import 'drillholes_page.dart';
 
 void main() {
   runApp(MaterialApp(

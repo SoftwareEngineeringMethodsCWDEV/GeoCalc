@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:geoapp/DataBase/db.dart';
-import 'package:geoapp/model/drillhole.dart';
-import 'package:geoapp/widget/drillhole_from_wiget.dart';
+
+import 'database/db.dart';
+import 'model/drillhole.dart';
+import 'widget/drillhole_from_wiget.dart';
 
 class AddEditDrillholePage extends StatefulWidget {
   final Drillhole? drillhole;
@@ -21,23 +22,23 @@ class _AddEditDrillholePageState extends State<AddEditDrillholePage> {
   @override
   void initState() {
     super.initState();
-    
+
     name = widget.drillhole?.name ?? '';
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      actions: [buildButton()],
-    ),
-    body: Form(
-      key: _formKey,
-      child: DrillholeFormWidget(
-        name: name,
-        onChangedName: (name) => setState(() => this.name = name),
-      ),
-    ),
-  );
+        appBar: AppBar(
+          actions: [buildButton()],
+        ),
+        body: Form(
+          key: _formKey,
+          child: DrillholeFormWidget(
+            name: name,
+            onChangedName: (name) => setState(() => this.name = name),
+          ),
+        ),
+      );
 
   Widget buildButton() {
     final isFormValid = name.isNotEmpty;
