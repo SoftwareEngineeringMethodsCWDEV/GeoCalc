@@ -1,25 +1,69 @@
-import 'dart:collection';
 import 'package:flutter/material.dart';
-
-import 'casket_classes.dart';
-import 'casket_scheme.dart';
+import 'calcPage.dart';
+import 'drillholesPage.dart';
 
 void main() {
-  final loadedLabels = LinkedList<KernLabel>();
-  KernLabel fstStart = KernLabel(true, 0, 0, 5, Colors.green);
-  KernLabel fstEnd = KernLabel(true, 200, 5.5, 5, Colors.grey);
-  loadedLabels.addAll([
-    KernLabel(false, 0, 0, 5, Colors.green),
-    fstStart,
-    KernLabel(false, 50, 1.5, 5, Colors.green),
-    KernLabel(false, 75, 2, 5, Colors.blue),
-    KernLabel(false, 150, 3.4, 5, Colors.grey),
-    fstEnd,
-    KernLabel(false, 210, 5.6, 5, Colors.yellow),
-  ]);
 
-  runApp(MaterialApp(
-      home: Scaffold(
-          appBar: AppBar(title: const Text('Fl')),
-          body: CasketScheme(fstStart, fstEnd))));
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const Main(),
+        '/calc': (context) => const calcPage(),
+        '/tubeList': (context)  => DrillholesPage(),
+
+      },
+    )
+  );
+}
+
+class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("GeoApp",
+              style: TextStyle(fontSize: 20),),
+              Container(
+                width: 250,
+                child: TextButton.icon(
+                    style:ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.blue),
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/calc');
+                    },
+
+                  icon: const Icon(Icons.calculate),
+                  label: const Text('Расчёт глубины скважины'),
+                ),
+              ),
+              Container(
+                width: 250,
+                child: TextButton.icon(
+                  style:ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/tubeList');
+                  },
+                  icon: const Icon(Icons.view_stream_rounded),
+                  label: const Text('Замеры'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ));
+  }
 }
