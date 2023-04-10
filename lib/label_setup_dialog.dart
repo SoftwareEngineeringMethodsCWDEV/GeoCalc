@@ -68,11 +68,12 @@ class CasketCellData extends StatelessWidget {
             ),
             Row(children: [
               Text('Выход керна: '),
-              ColorPicker(
-                  pickerColor: _dialogOutput.color,
-                  onColorChanged: (color) {
-                    _dialogOutput.color = color;
-                  })
+              Expanded(
+                  child: ColorPicker(
+                      pickerColor: _dialogOutput.color,
+                      onColorChanged: (color) {
+                        _dialogOutput.color = color;
+                      }))
             ]),
             Row(children: [
               ElevatedButton(
@@ -147,11 +148,12 @@ class CasketCellData extends StatelessWidget {
             ),
             Row(children: [
               Text('Выход керна: '),
-              ColorPicker(
-                  pickerColor: _dialogOutput.color,
-                  onColorChanged: (color) {
-                    _dialogOutput.color = color;
-                  })
+              Expanded(
+                  child: ColorPicker(
+                      pickerColor: _dialogOutput.color,
+                      onColorChanged: (color) {
+                        _dialogOutput.color = color;
+                      }))
             ]),
             Row(children: [
               ElevatedButton(
