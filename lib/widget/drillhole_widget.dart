@@ -1,7 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:geoapp/model/drillhole.dart';
 
+import '../model/drillhole.dart';
 
 class DrillholeCardWidget extends StatelessWidget {
   DrillholeCardWidget({
@@ -45,5 +46,4 @@ class DrillholeCardWidget extends StatelessWidget {
       ),
     );
   }
-
 }

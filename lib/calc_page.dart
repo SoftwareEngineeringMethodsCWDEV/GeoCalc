@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 class calcPage extends StatefulWidget {
   const calcPage({Key? key}) : super(key: key);
 
+  void main() {
+    WidgetsFlutterBinding.ensureInitialized();
+  }
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-}
   @override
   State<calcPage> createState() => _CalcPageState();
 }
-
 
 class _CalcPageState extends State<calcPage> {
   static const bTSKey = 'BTsize';
@@ -68,13 +65,11 @@ class _CalcPageState extends State<calcPage> {
     DeadSize = double.parse(Deadcontroller.text);
     WorkSize = double.parse(Workcontroller.text);
 
-    if (ColTubeSize != 0 &&
-        DeadSize != 0 &&
-        WorkSize != 0) {
+    if (ColTubeSize != 0 && DeadSize != 0 && WorkSize != 0) {
       res = ((BTCount * BTSize) +
-          (STCount * STSize) +
-          (MTCount * MTSize) +
-          ColTubeSize) -
+              (STCount * STSize) +
+              (MTCount * MTSize) +
+              ColTubeSize) -
           DeadSize -
           WorkSize;
       resText = res.toString();
@@ -106,7 +101,6 @@ class _CalcPageState extends State<calcPage> {
     Colcontroller = TextEditingController(text: _colinitedField);
     Deadcontroller = TextEditingController(text: _deadinitedField);
     buttonColor();
-
   }
 
   void lockValues() async {
@@ -119,18 +113,19 @@ class _CalcPageState extends State<calcPage> {
       } else {
         _containerColor = Colors.blue[900]!;
         setAllFields();
-      };
+      }
+      ;
     });
   }
 
-
-  Future _setField(TubyKey, TubeController) async{
+  Future _setField(TubyKey, TubeController) async {
     var prefs = await SharedPreferences.getInstance();
     prefs.setString(TubyKey, TubeController.text);
     prefs.setBool(enableKey, isEnabled);
-    prefs.setBool(filledKey,  isFilled);
+    prefs.setBool(filledKey, isFilled);
   }
-  void setAllFields(){
+
+  void setAllFields() {
     _setField(bTSKey, BTScontroller);
     _setField(sTSKey, STScontroller);
     _setField(mTSKey, MTScontroller);
@@ -138,31 +133,30 @@ class _CalcPageState extends State<calcPage> {
     _setField(deadKey, Deadcontroller);
   }
 
-  Future _clearField() async{
+  Future _clearField() async {
     var prefs = await SharedPreferences.getInstance();
     prefs.clear();
   }
 
-  Future<String> _getField(getKey) async{
+  Future<String> _getField(getKey) async {
     var prefs = await SharedPreferences.getInstance();
-    return prefs.getString(getKey)?? '';
+    return prefs.getString(getKey) ?? '';
   }
 
-  Future<bool> _getEnabled() async{
+  Future<bool> _getEnabled() async {
     var prefs = await SharedPreferences.getInstance();
     return prefs.getBool(enableKey) ?? true;
   }
 
-  Future<bool> _getFilled() async{
+  Future<bool> _getFilled() async {
     var prefs = await SharedPreferences.getInstance();
     return prefs.getBool(filledKey) ?? false;
   }
 
-  void buttonColor(){
-    if (isEnabled == true){
+  void buttonColor() {
+    if (isEnabled == true) {
       _containerColor = Colors.white;
-    }
-    else {
+    } else {
       _containerColor = Colors.blue[900]!;
     }
   }
@@ -170,8 +164,7 @@ class _CalcPageState extends State<calcPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: ListView(children: [
         Center(
           child: Padding(
@@ -224,7 +217,6 @@ class _CalcPageState extends State<calcPage> {
                       Container(
                         width: 100,
                         child: TextField(
-
                           enabled: isEnabled,
                           keyboardType: TextInputType.number,
                           minLines: 1,
@@ -358,9 +350,7 @@ class _CalcPageState extends State<calcPage> {
                     ]),
                   )
                 ]),
-
                 SizedBox(height: 6),
-
                 Padding(
                   padding: const EdgeInsets.all(9.0),
                   child: Row(children: const [
@@ -374,7 +364,6 @@ class _CalcPageState extends State<calcPage> {
                         style: TextStyle(fontSize: 17))
                   ]),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.only(right: 9),
                   child: Row(children: [
@@ -443,19 +432,15 @@ class _CalcPageState extends State<calcPage> {
                     )
                   ]),
                 ),
-
                 SizedBox(height: 6),
-
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: const Center(
-                    child:
-                    Text("Рабочий замер",
+                    child: Text("Рабочий замер",
                         textAlign: TextAlign.left,
                         style: TextStyle(fontSize: 20)),
                   ),
                 ),
-
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -479,11 +464,9 @@ class _CalcPageState extends State<calcPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(
                   height: 30,
                 ),
-
                 const Text("Глубина скважины",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 25)),
