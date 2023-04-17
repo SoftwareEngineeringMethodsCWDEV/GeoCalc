@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'casket_classes.dart';
-import 'label_setup_dialog.dart';
+import '../data_classes/kern_label.dart';
+import '../label_setup_dialog.dart';
 
 class RulerRowPainter extends CustomPainter {
   final KernLabel _beforeLabel; // last before curr Row, not included

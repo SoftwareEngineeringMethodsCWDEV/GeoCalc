@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter/material.dart';
 
-// import 'package:geoapp/model/label.dart';
-import 'database/db.dart';
-import 'model/drillhole.dart';
-import 'edit_drillhole_page.dart';
-import 'labels_page.dart';
-import 'widget/drillhole_widget.dart';
+import 'database_interaction/db_commands.dart';
+import 'data_classes/drillhole.dart';
+import 'widgets/drillhole_widget.dart';
+import 'drillhole_setup_page.dart';
+import 'caskets_page.dart';
 
 class DrillholesPage extends StatefulWidget {
   @override

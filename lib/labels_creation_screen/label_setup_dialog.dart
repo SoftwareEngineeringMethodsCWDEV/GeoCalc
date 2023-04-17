@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter/material.dart';
 
-import 'casket_classes.dart';
+import 'data_classes/kern_label.dart';
 
 class KernLabelSetup extends StatefulWidget {
   final KernLabel _initial;

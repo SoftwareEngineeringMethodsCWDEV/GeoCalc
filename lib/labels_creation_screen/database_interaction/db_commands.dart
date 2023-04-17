@@ -1,8 +1,8 @@
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-import '../model/label.dart';
-import '../model/drillhole.dart';
+import '../data_classes/drillhole.dart';
+import '../data_classes/label.dart';
 
 class Box {
   List<Label> _labels = [];

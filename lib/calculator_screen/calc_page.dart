@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 class calcPage extends StatefulWidget {
   const calcPage({Key? key}) : super(key: key);
@@ -28,14 +28,7 @@ class _CalcPageState extends State<calcPage> {
 
   Color _containerColor = Colors.white;
   int BTCount = 0, STCount = 0, MTCount = 0;
-  double BTSize = 0,
-      STSize = 0,
-      MTSize = 0,
-      ColTubeSize = 0,
-      DeadSize = 0,
-      WorkSize = 0,
-      res = 0,
-      resFontSize = 20;
+  double BTSize = 0, STSize = 0, MTSize = 0, ColTubeSize = 0, DeadSize = 0, WorkSize = 0, res = 0, resFontSize = 20;
 
   String _bTSinitedField = '';
   String _sTSinitedField = '';
@@ -66,12 +59,7 @@ class _CalcPageState extends State<calcPage> {
     WorkSize = double.parse(Workcontroller.text);
 
     if (ColTubeSize != 0 && DeadSize != 0 && WorkSize != 0) {
-      res = ((BTCount * BTSize) +
-              (STCount * STSize) +
-              (MTCount * MTSize) +
-              ColTubeSize) -
-          DeadSize -
-          WorkSize;
+      res = ((BTCount * BTSize) + (STCount * STSize) + (MTCount * MTSize) + ColTubeSize) - DeadSize - WorkSize;
       resText = res.toString();
       resFontSize = 40;
     } else {
@@ -176,19 +164,13 @@ class _CalcPageState extends State<calcPage> {
                   padding: const EdgeInsets.all(9.0),
                   child: Row(children: const [
                     SizedBox(width: 60),
-                    Text("Количество",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(fontSize: 17)),
+                    Text("Количество", textAlign: TextAlign.left, style: TextStyle(fontSize: 17)),
                     Spacer(),
-                    Text("Размеры (м.)",
-                        textAlign: TextAlign.right,
-                        style: TextStyle(fontSize: 17))
+                    Text("Размеры (м.)", textAlign: TextAlign.right, style: TextStyle(fontSize: 17))
                   ]),
                 ),
                 Row(children: [
-                  const Text("Б/Т:",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(fontSize: 30)),
+                  const Text("Б/Т:", textAlign: TextAlign.left, style: TextStyle(fontSize: 30)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 9.0),
                     child: Row(children: [
@@ -240,9 +222,7 @@ class _CalcPageState extends State<calcPage> {
                   )
                 ]),
                 Row(children: [
-                  const Text("C/Т:",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(fontSize: 30)),
+                  const Text("C/Т:", textAlign: TextAlign.left, style: TextStyle(fontSize: 30)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 9.0),
                     child: Row(children: [
@@ -297,9 +277,7 @@ class _CalcPageState extends State<calcPage> {
                   )
                 ]),
                 Row(children: [
-                  const Text("М/Т:",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(fontSize: 30)),
+                  const Text("М/Т:", textAlign: TextAlign.left, style: TextStyle(fontSize: 30)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 9.0),
                     child: Row(children: [
@@ -355,13 +333,9 @@ class _CalcPageState extends State<calcPage> {
                   padding: const EdgeInsets.all(9.0),
                   child: Row(children: const [
                     SizedBox(width: 60),
-                    Text("Колонковая труба",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(fontSize: 17)),
+                    Text("Колонковая труба", textAlign: TextAlign.left, style: TextStyle(fontSize: 17)),
                     Spacer(),
-                    Text("Мертвый замер",
-                        textAlign: TextAlign.right,
-                        style: TextStyle(fontSize: 17))
+                    Text("Мертвый замер", textAlign: TextAlign.right, style: TextStyle(fontSize: 17))
                   ]),
                 ),
                 Padding(
@@ -436,9 +410,7 @@ class _CalcPageState extends State<calcPage> {
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: const Center(
-                    child: Text("Рабочий замер",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(fontSize: 20)),
+                    child: Text("Рабочий замер", textAlign: TextAlign.left, style: TextStyle(fontSize: 20)),
                   ),
                 ),
                 Center(
@@ -467,9 +439,7 @@ class _CalcPageState extends State<calcPage> {
                 const SizedBox(
                   height: 30,
                 ),
-                const Text("Глубина скважины",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 25)),
+                const Text("Глубина скважины", textAlign: TextAlign.center, style: TextStyle(fontSize: 25)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 50.0),
                   child: Center(

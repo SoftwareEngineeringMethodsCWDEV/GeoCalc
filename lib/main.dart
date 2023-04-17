@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'calc_page.dart';
-import 'drillholes_page.dart';
+import 'labels_creation_screen/drillholes_page.dart';
+import 'calculator_screen/calc_page.dart';
 
 void main() {
   runApp(MaterialApp(
