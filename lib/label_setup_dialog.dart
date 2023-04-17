@@ -3,91 +3,120 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import 'casket_classes.dart';
 
+class KernLabelSetup extends StatefulWidget {
+  final KernLabel _initial;
+
+  final double _depthBefore;
+  final double? _depthAfter;
+  final int _startingDistance;
+
+  const KernLabelSetup(this._initial, this._depthBefore, this._depthAfter, this._startingDistance, {super.key});
+
+  @override
+  State<StatefulWidget> createState() => KernLabelSetupState(_initial, _depthBefore, _depthAfter, _startingDistance);
+}
+
+class KernLabelSetupState extends State<KernLabelSetup> {
+  final KernLabel _current;
+  final int _startingDistance;
+  final double _depthBefore;
+  final double? _depthAfter;
+
+  KernLabelSetupState(this._current, this._depthBefore, this._depthAfter, this._startingDistance);
+  @override
+  Widget build(BuildContext context) {
+    final String nextLabelDepth = (_depthAfter == null ? ' ' : 'до ${_depthAfter!.toStringAsFixed(2)}');
+    return Column(children: [
+      const Text('Расстояние от края'),
+      Slider(
+          value: ((_current.distance) % 100).toDouble(),
+          min: (_startingDistance.toDouble() % 100),
+          max: (_startingDistance.toDouble() + 9) % 100,
+          divisions: 10,
+          label: '${(_current.distance) % 100}',
+          onChanged: (newDist) => setState(() {
+                _current.distance = newDist.toInt();
+              })),
+      Text('возможная глубина: от ${_depthBefore.toStringAsFixed(2)}$nextLabelDepth'),
+      Row(
+        children: [
+          const Text('Глубина: '),
+          Expanded(
+              child: TextFormField(
+            keyboardType: TextInputType.number,
+            initialValue: '${_current.depth}',
+          ))
+        ],
+      ),
+      Row(
+        children: [
+          const Text('Выход керна: '),
+          Expanded(
+              child: TextFormField(
+            keyboardType: TextInputType.number,
+            initialValue: '${_current.coreOutput}',
+          ))
+        ],
+      ),
+      Row(
+        children: [
+          Container(decoration: BoxDecoration(shape: BoxShape.circle, color: _current.color), width: 120, height: 120),
+          ElevatedButton(onPressed: () => pickColor(context), child: const Text('Выбрать цвет'))
+        ],
+      )
+    ]);
+  }
+
+  void pickColor(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+          title: const Text('Цвет'),
+          content: Column(children: [
+            ColorPicker(pickerColor: _current.color, onColorChanged: (color) => setState(() => _current.color = color)),
+            // TextButton(
+            //   child: const Text('Выбрать'),
+            //   onPressed: () => Navigator.of(context).pop,
+            // )
+          ])));
+}
+
 class CasketCellData extends StatelessWidget {
   final KernLabel _reference;
   final bool _isLabelKeeper;
   final int _distance;
   final Function _afterChangingCallback;
 
-  KernLabel _dialogOutput;
+  final KernLabel _dialogOutput;
 
-// TODO: Разобраться с Key? key
-  CasketCellData(this._reference, this._isLabelKeeper, this._distance,
-      this._afterChangingCallback)
+  CasketCellData(this._reference, this._isLabelKeeper, this._distance, this._afterChangingCallback, {super.key})
       : _dialogOutput = KernLabel(
             false,
             _distance,
             (_isLabelKeeper
                 ? _reference.depth
-                : KernLabel.calcDepthBetween(
-                    _reference.previous!, _reference, _distance)),
+                : (_reference.nextReal() == null
+                    ? KernLabel.extrapolateDepth(_reference, _distance)
+                    : KernLabel.calcDepthBetween(_reference, _reference.nextReal()!, _distance))),
             _reference.coreOutput,
             _reference.color);
 
   void showCreateDialog(BuildContext context) => showDialog(
       context: context,
       builder: (context) {
-        final prevLabelDepth = _reference.prevReal()!.depth;
-        final nextLabel = _reference.nextReal();
-        final String nextLabelDepth =
-            (nextLabel == null ? ' ' : 'до ${nextLabel.depth}');
         return Dialog(
           child: Column(children: [
-            Text('Создать этикетку'),
-            // Text('Расстояние от края'), //TODO: Slider требует StatefulWidget
-            // Slider(
-            //     value: _distance.toDouble(),
-            //     min: _distance.toDouble(),
-            //     max: _distance.toDouble() + 10,
-            //     divisions: 10,
-            //     label: '${(_dialogOutput.distance) % 100}',
-            //     onChanged: (newDist) {
-            //       _dialogOutput.distance = newDist.round();
-            //     }),
-            Text('На ${_dialogOutput.distance} см'),
-            Text('возможная глубина: от $prevLabelDepth$nextLabelDepth'),
-            Row(
-              children: [
-                Text('Глубина: '),
-                Expanded(
-                    child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  initialValue: '${_dialogOutput.depth}',
-                ))
-              ],
-            ),
-            Row(
-              children: [
-                Text('Выход керна: '),
-                Expanded(
-                    child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  initialValue: '${_dialogOutput.coreOutput}',
-                ))
-              ],
-            ),
-            Row(children: [
-              Text('Выход керна: '),
-              Expanded(
-                  child: ColorPicker(
-                      pickerColor: _dialogOutput.color,
-                      onColorChanged: (color) {
-                        _dialogOutput.color = color;
-                      }))
-            ]),
+            const Text('Создать этикетку'),
+            KernLabelSetup(_dialogOutput, _reference.depth, (_reference.nextReal() == null ? null : _reference.nextReal()!.depth), _distance),
             Row(children: [
               ElevatedButton(
                   onPressed: () {
                     //TODO: бд
-                    _reference
-                        .insertBefore(_dialogOutput); // TODO: может быть null
+                    _reference.insertAfter(_dialogOutput); // TODO: может быть null
                     _afterChangingCallback();
                     Navigator.of(context).pop();
                   },
-                  child: Text('Сохранить')),
-              ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Отмена'))
+                  child: const Text('Сохранить')),
+              ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Отмена'))
             ])
           ]),
         );
@@ -96,15 +125,11 @@ class CasketCellData extends StatelessWidget {
   void showModifyDialog(BuildContext context) => showDialog(
       context: context,
       builder: (context) {
-        final prevLabelDepth = _reference.prevReal()!.depth;
-        final nextLabel = _reference.nextReal();
-        final String nextLabelDepth =
-            (nextLabel == null ? ' ' : 'до ${nextLabel.depth}');
         return Dialog(
           child: Column(children: [
             Row(
               children: [
-                Text('Модификация'),
+                const Text('Модификация'),
                 ElevatedButton(
                     onPressed: () {
                       //TODO: бд
@@ -112,62 +137,20 @@ class CasketCellData extends StatelessWidget {
                       _afterChangingCallback();
                       Navigator.of(context).pop();
                     },
-                    child: Text('Удалить'))
+                    child: const Text('Удалить'))
               ],
             ),
-
-            // Text('Расстояние от края'), //TODO: Slider требует StatefulWidget
-            // Slider(
-            //     value: _distance.toDouble(),
-            //     min: _distance.toDouble(),
-            //     max: _distance.toDouble() + 10,
-            //     divisions: 10,
-            //     label: '${(_dialogOutput.distance) % 100}',
-            //     onChanged: (newDist) {
-            //       _dialogOutput.distance = newDist.round();
-            //     }),
-            Text('На ${_dialogOutput.distance} см'),
-            Text('возможная глубина: от $prevLabelDepth$nextLabelDepth'),
-            Row(
-              children: [
-                Text('Глубина: '),
-                Expanded(
-                    child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        initialValue: '${_dialogOutput.coreOutput}'))
-              ],
-            ),
-            Row(
-              children: [
-                Text('Выход керна: '),
-                Expanded(
-                    child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        initialValue: '${_dialogOutput.coreOutput}'))
-              ],
-            ),
-            Row(children: [
-              Text('Выход керна: '),
-              Expanded(
-                  child: ColorPicker(
-                      pickerColor: _dialogOutput.color,
-                      onColorChanged: (color) {
-                        _dialogOutput.color = color;
-                      }))
-            ]),
+            KernLabelSetup(_dialogOutput, _reference.depth, (_reference.nextReal() == null ? null : _reference.nextReal()!.depth), _distance),
             Row(children: [
               ElevatedButton(
                   onPressed: () {
                     //TODO: бд
-                    _reference
-                        .copyDataFrom(_dialogOutput); // TODO: может быть null
+                    _reference.copyDataFrom(_dialogOutput); // TODO: может быть null
                     _afterChangingCallback();
                     Navigator.of(context).pop();
                   },
-                  child: Text('Модифицировать')),
-              ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Отмена'))
+                  child: const Text('Модифицировать')),
+              ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Отмена'))
             ])
           ]),
         );
@@ -175,18 +158,14 @@ class CasketCellData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLabelKeeper) {
-      return TableRowInkWell(
-          child: Text(' '),
-          onLongPress: () {
+    return TableRowInkWell(
+        child: const Text(' '),
+        onDoubleTap: () {
+          if (_isLabelKeeper) {
             return showModifyDialog(context);
-          }); //TODO: мб тут можно оптимальней
-    } else {
-      return TableRowInkWell(
-          child: Text(' '),
-          onLongPress: () {
+          } else {
             return showCreateDialog(context);
-          });
-    }
+          }
+        });
   }
 }

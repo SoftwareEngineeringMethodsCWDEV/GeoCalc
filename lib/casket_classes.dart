@@ -11,8 +11,7 @@ class KernLabel extends LinkedListEntry<KernLabel> {
 
   Color color; // цвет для рейса до этикетки
 
-  KernLabel(
-      this.isImaginary, this.distance, this.depth, this.coreOutput, this.color);
+  KernLabel(this.isImaginary, this.distance, this.depth, this.coreOutput, this.color);
 
   void copyDataFrom(KernLabel other) {
     this.distance = other.distance;
@@ -53,19 +52,20 @@ class KernLabel extends LinkedListEntry<KernLabel> {
     return curr;
   }
 
-  static double calcDepthBetween(
-      KernLabel before, KernLabel after, int onDistance) {
+  static double calcDepthBetween(KernLabel before, KernLabel after, int onDistance) {
     // TODO: check inputs
-    double scale =
-        (after.depth - before.depth) / (after.distance - before.distance);
+    double scale = (after.depth - before.depth) / (after.distance - before.distance);
     return before.depth + (onDistance - before.distance) * scale;
   }
 
-  static int calcDistanceBetween(
-      KernLabel before, KernLabel after, double onDepth) {
+  static double extrapolateDepth(KernLabel before, int onDistance) {
+    double scale = (before.depth) / (before.distance);
+    return onDistance * scale;
+  }
+
+  static int calcDistanceBetween(KernLabel before, KernLabel after, double onDepth) {
     // TODO: check inputs
-    double scale =
-        (after.distance - before.distance) / (after.depth - before.depth);
+    double scale = (after.distance - before.distance) / (after.depth - before.depth);
 
     return before.distance + ((onDepth - before.depth) * scale).round();
   }

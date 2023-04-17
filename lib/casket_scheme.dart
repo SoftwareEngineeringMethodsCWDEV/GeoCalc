@@ -9,23 +9,19 @@ class RulerRowPainter extends CustomPainter {
 
   final int _startDistance; // starting distance of row
 
-  const RulerRowPainter(
-      this._startDistance, this._beforeLabel, this._afterLabel);
+  const RulerRowPainter(this._startDistance, this._beforeLabel, this._afterLabel);
 
   @override
   void paint(Canvas canvas, Size size) {
     // отрисовка разметки
     KernLabel currLabel = _beforeLabel;
-    double currDepth = KernLabel.calcDepthBetween(
-            _beforeLabel, _beforeLabel.next!, _startDistance)
-        .ceilToDouble();
+    double currDepth = KernLabel.calcDepthBetween(_beforeLabel, _beforeLabel.next!, _startDistance).ceilToDouble();
     final List<int> drawDistances = [];
     while (currLabel != _afterLabel) {
       final KernLabel nextLabel = currLabel.next!;
       for (double depth = currDepth; depth < nextLabel.depth; depth += 1.0) {
         //TODO: 0.5
-        final int lineDistance =
-            KernLabel.calcDistanceBetween(currLabel, nextLabel, depth);
+        final int lineDistance = KernLabel.calcDistanceBetween(currLabel, nextLabel, depth);
         if (lineDistance > _startDistance + 100) {
           break;
         }
@@ -35,25 +31,21 @@ class RulerRowPainter extends CustomPainter {
       currDepth = currLabel.depth.ceilToDouble();
     }
 
-    final paint = Paint()..strokeWidth = 4;
+    final paint = Paint()..strokeWidth = 2;
     for (int drawDist in drawDistances) {
       final Offset top = Offset(size.width * (drawDist % 100) / 100, 0);
-      final Offset bot =
-          Offset(size.width * (drawDist % 100) / 100, size.height);
+      final Offset bot = Offset(size.width * (drawDist % 100) / 100, size.height);
       canvas.drawLine(top, bot, paint);
     }
 
     // отрисовка чисел
-    final textStyle = TextStyle(color: Colors.black, fontSize: 10);
+    const textStyle = TextStyle(color: Colors.black, fontSize: 15);
 
     currLabel = _beforeLabel.next!;
     while (currLabel != _afterLabel) {
-      final textPainter = TextPainter(
-          text: TextSpan(text: '${currLabel.depth}🠗', style: textStyle),
-          textDirection: TextDirection.ltr);
+      final textPainter = TextPainter(text: TextSpan(text: currLabel.depth.toStringAsFixed(2), style: textStyle), textDirection: TextDirection.ltr);
       textPainter.layout(minWidth: 0, maxWidth: size.width);
-      final Offset labelPlace = Offset(
-          size.width * (currLabel.distance % 100) / 100, size.height / 2);
+      final Offset labelPlace = Offset(size.width * (currLabel.distance % 100) / 100, size.height / 2);
       textPainter.paint(canvas, labelPlace);
 
       currLabel = currLabel.nextReal()!;
@@ -82,8 +74,7 @@ class CasketSchemeState extends State<CasketScheme> {
   final KernLabel _startFake;
   final KernLabel _endFake;
 
-  int get rowsAmount =>
-      ((_endFake.distance - _startFake.distance) / 100).round();
+  int get rowsAmount => ((_endFake.distance - _startFake.distance) / 100).round();
 
   CasketSchemeState(this._startFake, this._endFake);
 
@@ -97,23 +88,17 @@ class CasketSchemeState extends State<CasketScheme> {
 
     KernLabel rowStartLabel = _startFake;
     KernLabel rowEndLabel = rowStartLabel.next!;
-    for (int rowDist = _startFake.distance;
-        rowDist < _endFake.distance;
-        rowDist += 100) {
+    for (int rowDist = _startFake.distance; rowDist < _endFake.distance; rowDist += 100) {
       final tableRow = <Container>[];
-      for (int cellDist = rowDist + 10;
-          cellDist <= rowDist + 100;
-          cellDist += 10) {
+      for (int cellDist = rowDist + 10; cellDist <= rowDist + 100; cellDist += 10) {
         // TODO: числа в переменные
-        double toShow = KernLabel.calcDepthBetween(
-            rowEndLabel.prevReal()!, rowEndLabel, cellDist);
+        double toShow = KernLabel.calcDepthBetween(rowEndLabel.prevReal()!, rowEndLabel, cellDist);
         if (rowEndLabel.distance <= cellDist) {
           tableRow.add(Container(
-              color: rowEndLabel.color,
+              decoration: BoxDecoration(border: Border.all(color: Colors.black), color: rowEndLabel.color),
               child: Tooltip(
                 message: '$toShow',
-                child:
-                    CasketCellData(rowEndLabel, true, cellDist, redrawScheme),
+                child: CasketCellData(rowEndLabel, true, cellDist, redrawScheme),
               )));
           if (rowEndLabel.nextReal() == null) {
             break;
@@ -123,9 +108,7 @@ class CasketSchemeState extends State<CasketScheme> {
           tableRow.add(Container(
               color: rowEndLabel.color,
               child: Tooltip(
-                  message: '$toShow',
-                  child: CasketCellData(rowEndLabel, false, cellDist,
-                      redrawScheme)))); // TODO: отличия только в true/false
+                  message: '$toShow', child: CasketCellData(rowEndLabel.prevReal()!, false, cellDist, redrawScheme)))); // TODO: отличия только в true/false
         }
       }
 
@@ -133,9 +116,7 @@ class CasketSchemeState extends State<CasketScheme> {
           color: Colors.white,
           height: 25,
           width: double.infinity, // full width
-          child: CustomPaint(
-              foregroundPainter:
-                  RulerRowPainter(rowDist, rowStartLabel, rowEndLabel))));
+          child: CustomPaint(foregroundPainter: RulerRowPainter(rowDist, rowStartLabel, rowEndLabel))));
       scheme.add(Table(children: [TableRow(children: tableRow)]));
       rowStartLabel = rowEndLabel.previous!;
     }

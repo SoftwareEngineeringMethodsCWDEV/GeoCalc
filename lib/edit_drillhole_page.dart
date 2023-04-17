@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'database/db.dart';
 import 'model/drillhole.dart';
-import 'widget/drillhole_from_wiget.dart';
+import 'widget/drillhole_from_widget.dart';
 
 class AddEditDrillholePage extends StatefulWidget {
   final Drillhole? drillhole;

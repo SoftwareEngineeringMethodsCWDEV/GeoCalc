@@ -24,12 +24,12 @@ class _DrillholesPageState extends State<DrillholesPage> {
     refreshDrillholes();
   }
 
-  // @override
-  // void dispose() {
-  //   DrillholesDatabase.instance.close();
-  //
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    // DrillholesDatabase.instance.close();
+
+    // super.dispose();
+  }
 
   Future refreshDrillholes() async {
     setState(() => isLoading = true);
@@ -59,7 +59,7 @@ class _DrillholesPageState extends State<DrillholesPage> {
                   : buildDrillholes(),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blue[900],
+          backgroundColor: Colors.blue,
           child: Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
@@ -84,10 +84,9 @@ class _DrillholesPageState extends State<DrillholesPage> {
           return GestureDetector(
             onTap: () async {
               await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    DrillholeDetailPage(drillholeId: drillhole.id!),
+                builder: (context) => DrillholeDetailPage(drillholeId: drillhole.id!),
               ));
-              // DrillholesDatabase.instance.randominsert();
+
               refreshDrillholes();
             },
             child: DrillholeCardWidget(drillhole: drillhole, index: index),
