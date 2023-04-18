@@ -30,8 +30,8 @@ class KernLabelSetupState extends State<KernLabelSetup> {
       const Text('Расстояние от края'),
       Slider(
           value: ((_current.distance) % 100).toDouble(),
-          min: (_startingDistance.toDouble() % 100),
-          max: (_startingDistance.toDouble() + 9) % 100,
+          min: _startingDistance.toDouble() % 100,
+          max: _startingDistance.toDouble() % 100 + 9,
           divisions: 10,
           label: '${(_current.distance) % 100}',
           onChanged: (newDist) => setState(() {
@@ -60,7 +60,7 @@ class KernLabelSetupState extends State<KernLabelSetup> {
       ),
       Row(
         children: [
-          Container(decoration: BoxDecoration(shape: BoxShape.circle, color: _current.color), width: 120, height: 120),
+          Container(decoration: BoxDecoration(shape: BoxShape.circle, color: _current.color), width: 30, height: 30),
           ElevatedButton(onPressed: () => pickColor(context), child: const Text('Выбрать цвет'))
         ],
       )
@@ -90,6 +90,7 @@ class CasketCellData extends StatelessWidget {
 
   CasketCellData(this._reference, this._isLabelKeeper, this._distance, this._afterChangingCallback, {super.key})
       : _dialogOutput = KernLabel(
+            null,
             false,
             _distance,
             (_isLabelKeeper
@@ -145,7 +146,7 @@ class CasketCellData extends StatelessWidget {
               ElevatedButton(
                   onPressed: () {
                     //TODO: бд
-                    _reference.copyDataFrom(_dialogOutput); // TODO: может быть null
+                    _reference.copyDataFrom(_dialogOutput);
                     _afterChangingCallback();
                     Navigator.of(context).pop();
                   },

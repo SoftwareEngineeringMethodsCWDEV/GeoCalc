@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 //Основа для всех вычислений это Этикетка - вводится пользователем => все расчёты исходят от неё
 class KernLabel extends LinkedListEntry<KernLabel> {
+  int? id;
   final bool isImaginary;
 
   int distance; // в сантиметрах
@@ -11,7 +12,7 @@ class KernLabel extends LinkedListEntry<KernLabel> {
 
   Color color; // цвет для рейса до этикетки
 
-  KernLabel(this.isImaginary, this.distance, this.depth, this.coreOutput, this.color);
+  KernLabel(this.id, this.isImaginary, this.distance, this.depth, this.coreOutput, this.color);
 
   void copyDataFrom(KernLabel other) {
     this.distance = other.distance;

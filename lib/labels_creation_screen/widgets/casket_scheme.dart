@@ -5,7 +5,7 @@ import '../label_setup_dialog.dart';
 
 class RulerRowPainter extends CustomPainter {
   final KernLabel _beforeLabel; // last before curr Row, not included
-  final KernLabel? _afterLabel; // first after curr Row, not included
+  final KernLabel? _afterLabel; // first after curr Row, not included - can be null for cut row
 
   final int _startDistance; // starting distance of row
 
@@ -15,10 +15,13 @@ class RulerRowPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // отрисовка разметки
     KernLabel currLabel = _beforeLabel;
-    double currDepth = KernLabel.calcDepthBetween(_beforeLabel, _beforeLabel.next!, _startDistance).ceilToDouble();
+    double currDepth = KernLabel.calcDepthBetween(_beforeLabel, _beforeLabel.nextReal()!, _startDistance).ceilToDouble();
     final List<int> drawDistances = [];
     while (currLabel != _afterLabel) {
-      final KernLabel nextLabel = currLabel.next!;
+      if (currLabel.nextReal() == null) {
+        break;
+      }
+      final KernLabel nextLabel = currLabel.nextReal()!;
       for (double depth = currDepth; depth < nextLabel.depth; depth += 1.0) {
         //TODO: 0.5
         final int lineDistance = KernLabel.calcDistanceBetween(currLabel, nextLabel, depth);
@@ -41,7 +44,7 @@ class RulerRowPainter extends CustomPainter {
     // отрисовка чисел
     const textStyle = TextStyle(color: Colors.black, fontSize: 15);
 
-    currLabel = _beforeLabel.next!;
+    currLabel = _beforeLabel.nextReal()!;
     while (currLabel != _afterLabel) {
       final textPainter = TextPainter(text: TextSpan(text: currLabel.depth.toStringAsFixed(2), style: textStyle), textDirection: TextDirection.ltr);
       textPainter.layout(minWidth: 0, maxWidth: size.width);
@@ -86,13 +89,21 @@ class CasketSchemeState extends State<CasketScheme> {
   Widget build(BuildContext context) {
     final scheme = <Widget>[];
 
-    KernLabel rowStartLabel = _startFake;
-    KernLabel rowEndLabel = rowStartLabel.next!;
+    KernLabel rowStartLabel = _startFake.prevReal()!;
+    KernLabel? rowEndLabel = rowStartLabel.nextReal();
+
+    KernLabel remembrance = rowStartLabel; //TODO: по нормальному
+
     for (int rowDist = _startFake.distance; rowDist < _endFake.distance; rowDist += 100) {
       final tableRow = <Container>[];
       for (int cellDist = rowDist + 10; cellDist <= rowDist + 100; cellDist += 10) {
         // TODO: числа в переменные
-        double toShow = KernLabel.calcDepthBetween(rowEndLabel.prevReal()!, rowEndLabel, cellDist);
+        if (rowEndLabel == null) {
+          tableRow.add(Container(child: CasketCellData(remembrance, false, cellDist, redrawScheme)));
+          continue;
+        }
+
+        String toShow = KernLabel.calcDepthBetween(rowEndLabel.prevReal()!, rowEndLabel, cellDist).toStringAsFixed(2);
         if (rowEndLabel.distance <= cellDist) {
           tableRow.add(Container(
               decoration: BoxDecoration(border: Border.all(color: Colors.black), color: rowEndLabel.color),
@@ -100,27 +111,31 @@ class CasketSchemeState extends State<CasketScheme> {
                 message: '$toShow',
                 child: CasketCellData(rowEndLabel, true, cellDist, redrawScheme),
               )));
+
           if (rowEndLabel.nextReal() == null) {
-            break;
+            remembrance = rowEndLabel;
           }
-          rowEndLabel = rowEndLabel.nextReal()!;
+
+          rowEndLabel = rowEndLabel.nextReal();
         } else {
           tableRow.add(Container(
-              color: rowEndLabel.color,
-              child: Tooltip(
-                  message: '$toShow', child: CasketCellData(rowEndLabel.prevReal()!, false, cellDist, redrawScheme)))); // TODO: отличия только в true/false
+              color: rowEndLabel.color, child: Tooltip(message: '$toShow', child: CasketCellData(rowEndLabel.prevReal()!, false, cellDist, redrawScheme))));
         }
       }
 
       scheme.add(Container(
           color: Colors.white,
           height: 25,
-          width: double.infinity, // full width
+          width: double.infinity,
           child: CustomPaint(foregroundPainter: RulerRowPainter(rowDist, rowStartLabel, rowEndLabel))));
       scheme.add(Table(children: [TableRow(children: tableRow)]));
-      rowStartLabel = rowEndLabel.previous!;
+
+      rowStartLabel = (rowEndLabel == null ? remembrance : rowEndLabel.previous!);
     }
 
     return Column(children: scheme);
   }
 }
+/// Tooltip
+/// End
+/// конец
