@@ -11,6 +11,7 @@ class AddEditDrillholePage extends StatefulWidget {
     Key? key,
     this.drillhole,
   }) : super(key: key);
+
   @override
   _AddEditDrillholePageState createState() => _AddEditDrillholePageState();
 }
@@ -77,7 +78,7 @@ class _AddEditDrillholePageState extends State<AddEditDrillholePage> {
       name: name,
     );
 
-    await DrillholesDatabase.instance.update(drillhole);
+    await DrillholesDatabase.instance.updateDrillhole(drillhole);
   }
 
   Future addDrillhole() async {
@@ -86,6 +87,6 @@ class _AddEditDrillholePageState extends State<AddEditDrillholePage> {
       createdTime: DateTime.now(),
     );
 
-    await DrillholesDatabase.instance.create(drillhole);
+    await DrillholesDatabase.instance.createDrillhole(drillhole);
   }
 }

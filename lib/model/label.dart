@@ -7,9 +7,9 @@ class LabelFields {
   ];
 
   static final String id = '_id';
-  static final String drillhole_id = '_drillhole_id';
+  static final String drillhole_id = 'drillhole_id';
   static final String is_Imaginary = 'is_Imaginary';
-  static final String depth = 'deph';
+  static final String depth = 'depth';
   static final String distance = 'distance';
   static final String core_output = 'core_output';
 }
@@ -49,20 +49,20 @@ class Label {
       );
 
   static Label fromJson(Map<String, Object?> json) => Label(
-    id: json[LabelFields.id] as int?,
-    drillhole_id: json[LabelFields.drillhole_id] as int?,
-    is_Imaginary: json[LabelFields.is_Imaginary] == 1,
-    depth: json[LabelFields.depth] as double,
-    distance: json[LabelFields.distance] as int,
-    core_output: json[LabelFields.core_output] as double,
-  );
+        id: json[LabelFields.id] as int?,
+        drillhole_id: json[LabelFields.drillhole_id] as int?,
+        is_Imaginary: json[LabelFields.is_Imaginary] == 1,
+        depth: json[LabelFields.depth] as double,
+        distance: json[LabelFields.distance] as int,
+        core_output: json[LabelFields.core_output] as double,
+      );
 
   Map<String, Object?> toJson() => {
-    LabelFields.id: id,
-    LabelFields.drillhole_id: drillhole_id,
-    LabelFields.is_Imaginary: is_Imaginary ? 1 : 0,
-    LabelFields.depth: depth,
-    LabelFields.distance: distance,
-    LabelFields.core_output: core_output,
-  };
+        LabelFields.id: id,
+        LabelFields.drillhole_id: drillhole_id,
+        LabelFields.is_Imaginary: is_Imaginary ? 1 : 0,
+        LabelFields.depth: depth,
+        LabelFields.distance: distance,
+        LabelFields.core_output: core_output,
+      };
 }

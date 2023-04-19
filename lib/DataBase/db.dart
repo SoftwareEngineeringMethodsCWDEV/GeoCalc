@@ -4,6 +4,16 @@ import 'package:sqflite/sqflite.dart';
 import '../model/label.dart';
 import '../model/drillhole.dart';
 
+class Box {
+  List<Label> _labels = [];
+
+  Box(List<Label> labels) {
+    _labels = labels;
+  }
+
+  List<Label> get labels => _labels;
+}
+
 class DrillholesDatabase {
   static final DrillholesDatabase instance = DrillholesDatabase._init();
 
@@ -40,28 +50,20 @@ CREATE TABLE $tableDrillholes (
   )
 ''');
 
-//     await db.execute('''
-// CREATE TABLE $tableLabels (
-//   ${LabelFields.id} $idType,
-//   ${LabelFields.drillhole_id} $idType,
-//   ${LabelFields.is_Imaginary} $boolType,
-//   ${LabelFields.depth} $doubleType,
-//   ${LabelFields.distance} $integerType,
-//   ${LabelFields.core_output} $doubleType,
-//   )
-// ''');
+    await db.execute('''
+CREATE TABLE $tableLabels (
+  ${LabelFields.id} $idType,
+  ${LabelFields.drillhole_id} $integerType,
+  ${LabelFields.is_Imaginary} $boolType,
+  ${LabelFields.depth} $doubleType,
+  ${LabelFields.distance} $integerType,
+  ${LabelFields.core_output} $doubleType
+  )
+''');
   }
 
-  Future<Drillhole> create(Drillhole drillhole) async {
+  Future<Drillhole> createDrillhole(Drillhole drillhole) async {
     final db = await instance.database;
-
-    // final json = drillhole.toJson();
-    // final columns =
-    //     '${DrillholeFields.title}, ${DrillholeFields.description}, ${DrillholeFields.time}';
-    // final values =
-    //     '${json[DrillholeFields.title]}, ${json[DrillholeFields.description]}, ${json[DrillholeFields.time]}';
-    // final id = await db
-    //     .rawInsert('INSERT INTO table_name ($columns) VALUES ($values)');
 
     final id = await db.insert(tableDrillholes, drillhole.toJson());
     return drillhole.copy(id: id);
@@ -96,7 +98,7 @@ CREATE TABLE $tableDrillholes (
     return result.map((json) => Drillhole.fromJson(json)).toList();
   }
 
-  Future<int> update(Drillhole drillhole) async {
+  Future<int> updateDrillhole(Drillhole drillhole) async {
     final db = await instance.database;
 
     return db.update(
@@ -107,7 +109,7 @@ CREATE TABLE $tableDrillholes (
     );
   }
 
-  Future<int> delete(int id) async {
+  Future<int> deleteDrillhole(int id) async {
     final db = await instance.database;
 
     return await db.delete(
@@ -121,5 +123,126 @@ CREATE TABLE $tableDrillholes (
     final db = await instance.database;
 
     db.close();
+  }
+
+  Future<Label> createLabel(Label label) async {
+    final db = await instance.database;
+
+    final id = await db.insert(tableLabels, label.toJson());
+    return label.copy(id: id);
+  }
+
+  Future<Label> readLabel(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableLabels,
+      columns: LabelFields.values,
+      where: '${LabelFields.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return Label.fromJson(maps.first);
+    } else {
+      throw Exception('ID $id not found');
+    }
+  }
+
+  Future<List<Label>> readAllLabels() async {
+    final db = await instance.database;
+
+    final orderBy = '${LabelFields.depth} ASC';
+    final result =
+        await db.rawQuery('SELECT * FROM $tableLabels ORDER BY $orderBy');
+
+    return result.map((json) => Label.fromJson(json)).toList();
+  }
+
+  Future<int> updateLabel(Label label) async {
+    final db = await instance.database;
+
+    return db.update(
+      tableLabels,
+      label.toJson(),
+      where: '${LabelFields.id} = ?',
+      whereArgs: [label.id],
+    );
+  }
+
+  Future<int> deleteLabel(int id) async {
+    final db = await instance.database;
+
+    return await db.delete(
+      tableLabels,
+      where: '${LabelFields.id} = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> countBoxes(int dh_id) async {
+    final db = await instance.database;
+
+    final count = Sqflite.firstIntValue(await db.rawQuery(
+            'SELECT COUNT(*) FROM $tableLabels WHERE is_Imaginary = 1 AND drillhole_id = ?',
+            [dh_id])) ??
+        0;
+    // Return the count
+    return count;
+  }
+
+  Future<List<Box>> CreateBoxList(List<Label> labels, int dh_id) async {
+    List<Box> boxList = [];
+
+    for (int i = 0; i < labels.length; i++) {
+      Label currentList = labels[i];
+
+      List<Label> filteredLabelList = [];
+
+      if (currentList.drillhole_id == dh_id &&
+          currentList.is_Imaginary == true) {
+        filteredLabelList.add(currentList);
+      }
+
+      if (filteredLabelList.isNotEmpty) {
+        List<Label> labels = [currentList];
+        Box box = Box(labels);
+        boxList.add(box);
+      }
+    }
+
+    return boxList;
+  }
+
+  Future createBox(int dh_id) async {
+    final db = await instance.database;
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(?, 1, 99999, 0, 0)',
+        [dh_id]);
+  }
+
+  Future randominsert() async {
+    final db = await instance.database;
+
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 0, 0, 0)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 3, 1, 0.2)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 21, 15, 0.4)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 24, 1, 1)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 31, 6, 1)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 35, 4, 0.9)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 41, 6, 0.2)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 1, 0, 2, 0.1)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 0, 2, 2, 0.2)');
+    db.rawInsert(
+        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 1, 3, 1, 0.4)');
   }
 }

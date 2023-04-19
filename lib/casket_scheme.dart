@@ -69,9 +69,11 @@ class RulerRowPainter extends CustomPainter {
 class CasketScheme extends StatefulWidget {
   final KernLabel _startFake;
   final KernLabel _endFake;
+
   //final int _colAmount; // TODO: настраиваемая
 
   const CasketScheme(this._startFake, this._endFake);
+
   @override
   createState() => CasketSchemeState(_startFake, _endFake);
 }

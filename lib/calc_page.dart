@@ -19,7 +19,7 @@ class _CalcPageState extends State<calcPage> {
   static const colKey = 'Kolsize';
   static const deadKey = 'Deadsize';
 
-  static const enableKey = 'ebaled';
+  static const enableKey = 'enbaled';
   static const filledKey = 'filled';
 
   var finalValue = TextEditingController();

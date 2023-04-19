@@ -1,23 +1,21 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../model/drillhole.dart';
+import '../model/label.dart';
+import 'package:geoapp/DataBase/db.dart';
 
-class DrillholeCardWidget extends StatelessWidget {
-  DrillholeCardWidget({
+class LabelCardWidget extends StatelessWidget {
+  LabelCardWidget({
     Key? key,
-    required this.drillhole,
+    required this.box,
     required this.index,
   }) : super(key: key);
 
-  final Drillhole drillhole;
+  final Box box;
   final int index;
 
   @override
   Widget build(BuildContext context) {
-    final time = DateFormat.yMMMd().format(drillhole.createdTime);
-
     return Card(
       margin: EdgeInsets.symmetric(vertical: 5),
       color: Colors.blue,
@@ -28,16 +26,36 @@ class DrillholeCardWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              time,
-              style: TextStyle(color: Colors.grey.shade700),
-            ),
             SizedBox(height: 4),
             Text(
-              drillhole.name,
+              'Box ${index + 1}',
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 20,
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Глубина: ${box.labels[0].depth}',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Кол-во рядов: ???',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Выход керна: ${box.labels[0].core_output}',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
