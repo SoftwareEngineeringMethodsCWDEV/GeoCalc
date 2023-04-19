@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '../model/label.dart';
-import 'package:geoapp/DataBase/db.dart';
+import '../database_interaction/db_commands.dart';
 
 class LabelCardWidget extends StatelessWidget {
   LabelCardWidget({

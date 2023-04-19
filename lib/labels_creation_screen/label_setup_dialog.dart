@@ -1,10 +1,10 @@
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter/material.dart';
 
-import 'data_classes/kern_label.dart';
+import 'data_classes/label.dart';
 
 class KernLabelSetup extends StatefulWidget {
-  final KernLabel _initial;
+  final Label _initial;
 
   final double _depthBefore;
   final double? _depthAfter;
@@ -17,7 +17,7 @@ class KernLabelSetup extends StatefulWidget {
 }
 
 class KernLabelSetupState extends State<KernLabelSetup> {
-  final KernLabel _current;
+  final Label _current;
   final int _startingDistance;
   final double _depthBefore;
   final double? _depthAfter;
@@ -54,7 +54,7 @@ class KernLabelSetupState extends State<KernLabelSetup> {
           Expanded(
               child: TextFormField(
             keyboardType: TextInputType.number,
-            initialValue: '${_current.coreOutput}',
+            initialValue: '${_current.core_output}',
           ))
         ],
       ),
@@ -81,25 +81,26 @@ class KernLabelSetupState extends State<KernLabelSetup> {
 }
 
 class CasketCellData extends StatelessWidget {
-  final KernLabel _reference;
+  final Label _reference;
   final bool _isLabelKeeper;
   final int _distance;
   final Function _afterChangingCallback;
 
-  final KernLabel _dialogOutput;
+  final Label _dialogOutput;
 
   CasketCellData(this._reference, this._isLabelKeeper, this._distance, this._afterChangingCallback, {super.key})
-      : _dialogOutput = KernLabel(
-            null,
-            false,
-            _distance,
-            (_isLabelKeeper
+      : _dialogOutput = Label(
+            id: null,
+            drillhole_id: _reference.drillhole_id,
+            is_Imaginary: false,
+            distance: _distance,
+            depth: (_isLabelKeeper
                 ? _reference.depth
                 : (_reference.nextReal() == null
-                    ? KernLabel.extrapolateDepth(_reference, _distance)
-                    : KernLabel.calcDepthBetween(_reference, _reference.nextReal()!, _distance))),
-            _reference.coreOutput,
-            _reference.color);
+                    ? Label.extrapolateDepth(_reference, _distance)
+                    : Label.calcDepthBetween(_reference, _reference.nextReal()!, _distance))),
+            core_output: _reference.core_output,
+            color: _reference.color);
 
   void showCreateDialog(BuildContext context) => showDialog(
       context: context,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'data_classes/kern_label.dart';
+import 'data_classes/label.dart';
 import 'widgets/casket_scheme.dart';
 
 class KernLabelsPage extends StatefulWidget {
-  final KernLabel _startFake;
-  final KernLabel _endFake;
+  final Label _startFake;
+  final Label _endFake;
 
   const KernLabelsPage(this._startFake, this._endFake, {super.key});
 
@@ -15,8 +15,8 @@ class KernLabelsPage extends StatefulWidget {
 }
 
 class KernLabelsPageState extends State<KernLabelsPage> {
-  final KernLabel _startFake;
-  final KernLabel _endFake;
+  final Label _startFake;
+  final Label _endFake;
 
   KernLabelsPageState(this._startFake, this._endFake);
 

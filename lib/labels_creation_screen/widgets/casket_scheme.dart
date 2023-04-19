@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../data_classes/kern_label.dart';
 import '../label_setup_dialog.dart';
+import '../data_classes/label.dart';
 
 class RulerRowPainter extends CustomPainter {
-  final KernLabel _beforeLabel; // last before curr Row, not included
-  final KernLabel? _afterLabel; // first after curr Row, not included - can be null for cut row
+  final Label _beforeLabel; // last before curr Row, not included
+  final Label? _afterLabel; // first after curr Row, not included - can be null for cut row
 
   final int _startDistance; // starting distance of row
 
@@ -14,17 +14,17 @@ class RulerRowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // отрисовка разметки
-    KernLabel currLabel = _beforeLabel;
-    double currDepth = KernLabel.calcDepthBetween(_beforeLabel, _beforeLabel.nextReal()!, _startDistance).ceilToDouble();
+    Label currLabel = _beforeLabel;
+    double currDepth = Label.calcDepthBetween(_beforeLabel, _beforeLabel.nextReal()!, _startDistance).ceilToDouble();
     final List<int> drawDistances = [];
     while (currLabel != _afterLabel) {
       if (currLabel.nextReal() == null) {
         break;
       }
-      final KernLabel nextLabel = currLabel.nextReal()!;
+      final Label nextLabel = currLabel.nextReal()!;
       for (double depth = currDepth; depth < nextLabel.depth; depth += 1.0) {
         //TODO: 0.5
-        final int lineDistance = KernLabel.calcDistanceBetween(currLabel, nextLabel, depth);
+        final int lineDistance = Label.calcDistanceBetween(currLabel, nextLabel, depth);
         if (lineDistance > _startDistance + 100) {
           break;
         }
@@ -62,8 +62,8 @@ class RulerRowPainter extends CustomPainter {
 }
 
 class CasketScheme extends StatefulWidget {
-  final KernLabel _startFake;
-  final KernLabel _endFake;
+  final Label _startFake;
+  final Label _endFake;
 
   //final int _colAmount; // TODO: настраиваемая
 
@@ -74,8 +74,8 @@ class CasketScheme extends StatefulWidget {
 }
 
 class CasketSchemeState extends State<CasketScheme> {
-  final KernLabel _startFake;
-  final KernLabel _endFake;
+  final Label _startFake;
+  final Label _endFake;
 
   int get rowsAmount => ((_endFake.distance - _startFake.distance) / 100).round();
 
@@ -89,10 +89,10 @@ class CasketSchemeState extends State<CasketScheme> {
   Widget build(BuildContext context) {
     final scheme = <Widget>[];
 
-    KernLabel rowStartLabel = _startFake.prevReal()!;
-    KernLabel? rowEndLabel = rowStartLabel.nextReal();
+    Label rowStartLabel = _startFake.prevReal()!;
+    Label? rowEndLabel = rowStartLabel.nextReal();
 
-    KernLabel remembrance = rowStartLabel; //TODO: по нормальному
+    Label remembrance = rowStartLabel; //TODO: по нормальному
 
     for (int rowDist = _startFake.distance; rowDist < _endFake.distance; rowDist += 100) {
       final tableRow = <Container>[];
@@ -103,7 +103,7 @@ class CasketSchemeState extends State<CasketScheme> {
           continue;
         }
 
-        String toShow = KernLabel.calcDepthBetween(rowEndLabel.prevReal()!, rowEndLabel, cellDist).toStringAsFixed(2);
+        String toShow = Label.calcDepthBetween(rowEndLabel.prevReal()!, rowEndLabel, cellDist).toStringAsFixed(2);
         if (rowEndLabel.distance <= cellDist) {
           tableRow.add(Container(
               decoration: BoxDecoration(border: Border.all(color: Colors.black), color: rowEndLabel.color),
