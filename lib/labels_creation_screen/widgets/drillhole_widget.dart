@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../model/drillhole.dart';
+import '../data_classes/drillhole.dart';
 
 class DrillholeCardWidget extends StatelessWidget {
   DrillholeCardWidget({

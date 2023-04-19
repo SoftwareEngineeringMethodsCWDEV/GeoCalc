@@ -1,8 +1,8 @@
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-import '../model/label.dart';
-import '../model/drillhole.dart';
+import '../data_classes/drillhole.dart';
+import '../data_classes/label.dart';
 
 class Box {
   List<Label> _labels = [];
@@ -57,7 +57,8 @@ CREATE TABLE $tableLabels (
   ${LabelFields.is_Imaginary} $boolType,
   ${LabelFields.depth} $doubleType,
   ${LabelFields.distance} $integerType,
-  ${LabelFields.core_output} $doubleType
+  ${LabelFields.core_output} $doubleType,
+  ${LabelFields.color} $integerType
   )
 ''');
   }
@@ -153,8 +154,7 @@ CREATE TABLE $tableLabels (
     final db = await instance.database;
 
     final orderBy = '${LabelFields.depth} ASC';
-    final result =
-        await db.rawQuery('SELECT * FROM $tableLabels ORDER BY $orderBy');
+    final result = await db.rawQuery('SELECT * FROM $tableLabels ORDER BY $orderBy');
 
     return result.map((json) => Label.fromJson(json)).toList();
   }
@@ -183,10 +183,7 @@ CREATE TABLE $tableLabels (
   Future<int> countBoxes(int dh_id) async {
     final db = await instance.database;
 
-    final count = Sqflite.firstIntValue(await db.rawQuery(
-            'SELECT COUNT(*) FROM $tableLabels WHERE is_Imaginary = 1 AND drillhole_id = ?',
-            [dh_id])) ??
-        0;
+    final count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $tableLabels WHERE is_Imaginary = 1 AND drillhole_id = ?', [dh_id])) ?? 0;
     // Return the count
     return count;
   }
@@ -199,8 +196,7 @@ CREATE TABLE $tableLabels (
 
       List<Label> filteredLabelList = [];
 
-      if (currentList.drillhole_id == dh_id &&
-          currentList.is_Imaginary == true) {
+      if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
         filteredLabelList.add(currentList);
       }
 
@@ -216,33 +212,21 @@ CREATE TABLE $tableLabels (
 
   Future createBox(int dh_id) async {
     final db = await instance.database;
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(?, 1, 99999, 0, 0)',
-        [dh_id]);
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 99999, 0, 0, 0)', [dh_id]);
   }
 
   Future randominsert() async {
     final db = await instance.database;
 
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 0, 0, 0)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 3, 1, 0.2)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 21, 15, 0.4)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 24, 1, 1)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 31, 6, 1)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 35, 4, 0.9)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 41, 6, 0.2)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 1, 0, 2, 0.1)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 0, 2, 2, 0.2)');
-    db.rawInsert(
-        'INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 1, 3, 1, 0.4)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 0, 0, 0)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 3, 1, 0.2)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 21, 15, 0.4)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 24, 1, 1)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 31, 6, 1)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 1, 35, 4, 0.9)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(1, 0, 41, 6, 0.2)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 1, 0, 2, 0.1)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 0, 2, 2, 0.2)');
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output) VALUES(2, 1, 3, 1, 0.4)');
   }
 }

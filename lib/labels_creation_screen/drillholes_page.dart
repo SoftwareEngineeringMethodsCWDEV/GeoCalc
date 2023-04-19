@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter/material.dart';
 
-// import 'package:geoapp/model/label.dart';
-import 'database/db.dart';
-import 'model/drillhole.dart';
-import 'edit_drillhole_page.dart';
-import 'labels_page.dart';
-import 'widget/drillhole_widget.dart';
+import 'database_interaction/db_commands.dart';
+import 'data_classes/drillhole.dart';
+import 'widgets/drillhole_widget.dart';
+import 'drillhole_setup_page.dart';
+import 'caskets_page.dart';
 
 class DrillholesPage extends StatefulWidget {
   @override
@@ -24,12 +23,12 @@ class _DrillholesPageState extends State<DrillholesPage> {
     refreshDrillholes();
   }
 
-  // @override
-  // void dispose() {
-  //   DrillholesDatabase.instance.close();
-  //
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    // DrillholesDatabase.instance.close();
+
+    // super.dispose();
+  }
 
   Future refreshDrillholes() async {
     setState(() => isLoading = true);
@@ -59,7 +58,7 @@ class _DrillholesPageState extends State<DrillholesPage> {
                   : buildDrillholes(),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blue[900],
+          backgroundColor: Colors.blue,
           child: Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
@@ -84,10 +83,9 @@ class _DrillholesPageState extends State<DrillholesPage> {
           return GestureDetector(
             onTap: () async {
               await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    DrillholeDetailPage(drillholeId: drillhole.id!),
+                builder: (context) => DrillholeDetailPage(drillholeId: drillhole.id!),
               ));
-              // DrillholesDatabase.instance.randominsert();
+
               refreshDrillholes();
             },
             child: DrillholeCardWidget(drillhole: drillhole, index: index),

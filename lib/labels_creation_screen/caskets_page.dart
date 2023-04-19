@@ -1,15 +1,12 @@
-import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'widget/drillhole_widget.dart';
-import 'DataBase/db.dart';
-import 'model/drillhole.dart';
-import 'model/label.dart';
-import 'edit_drillhole_page.dart';
-import 'widget/label_widget.dart';
-import 'casket_scheme.dart';
-import 'casket_classes.dart';
+
+import 'database_interaction/db_commands.dart';
+import 'data_classes/drillhole.dart';
+import 'data_classes/label.dart';
+import 'drillhole_setup_page.dart';
+import 'widgets/label_widget.dart';
+import 'widgets/casket_scheme.dart';
 
 class DrillholeDetailPage extends StatefulWidget {
   final int drillholeId;
@@ -37,11 +34,9 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
   }
 
   Future<List<Box>> GetBoxes(dh_id) async {
-    Future<List<Label>> labelsFuture =
-        DrillholesDatabase.instance.readAllLabels();
+    Future<List<Label>> labelsFuture = DrillholesDatabase.instance.readAllLabels();
     List<Label> labels = await labelsFuture;
-    Future<List<Box>> boxListFuture =
-        DrillholesDatabase.instance.CreateBoxList(labels, dh_id);
+    Future<List<Box>> boxListFuture = DrillholesDatabase.instance.CreateBoxList(labels, dh_id);
     List<Box> boxes = await boxListFuture;
     return boxes;
   }
@@ -49,8 +44,7 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
   Future refreshDrillhole() async {
     setState(() => isLoading = true);
 
-    this.drillhole =
-        await DrillholesDatabase.instance.readDrillhole(widget.drillholeId);
+    this.drillhole = await DrillholesDatabase.instance.readDrillhole(widget.drillholeId);
 
     setState(() => isLoading = false);
   }
@@ -75,12 +69,10 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
         body: isLoading
             ? Center(child: CircularProgressIndicator())
             : Padding(
-                padding:
-                    EdgeInsets.only(left: 100, top: 12, right: 12, bottom: 12),
+                padding: EdgeInsets.only(left: 100, top: 12, right: 12, bottom: 12),
                 child: FutureBuilder<Widget>(
                   future: buildLabels(context),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                  builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
                     if (snapshot.hasData) {
                       return snapshot.data!;
                     } else if (snapshot.hasError) {
@@ -117,21 +109,9 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
 
         return GestureDetector(
           onTap: () async {
-            final loadedLabels = LinkedList<KernLabel>();
-            KernLabel fstStart = KernLabel(true, 0, 0, 5, Colors.green);
-            KernLabel fstEnd = KernLabel(true, 200, 5.5, 5, Colors.grey);
-            loadedLabels.addAll([
-              KernLabel(false, 0, 0, 5, Colors.green),
-              fstStart,
-              KernLabel(false, 50, 1.5, 5, Colors.green),
-              KernLabel(false, 75, 2, 5, Colors.blue),
-              KernLabel(false, 150, 3.4, 5, Colors.grey),
-              fstEnd,
-              KernLabel(false, 210, 5.6, 5, Colors.yellow),
-            ]);
-            await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    Scaffold(body: CasketScheme(fstStart, fstEnd))));
+            // TODO: связь
+            await Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => Scaffold(body: CasketScheme(boxes[index - 1].labels[0], boxes[index].labels[0]))));
 
             refreshLabels();
           },
