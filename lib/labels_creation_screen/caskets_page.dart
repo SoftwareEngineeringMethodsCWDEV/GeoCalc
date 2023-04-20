@@ -1,5 +1,8 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:geoapp/labels_creation_screen/labels_page.dart';
 
 import 'database_interaction/db_commands.dart';
 import 'data_classes/drillhole.dart';
@@ -33,11 +36,12 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
     refreshLabels();
   }
 
-  Future<List<Box>> GetBoxes(dh_id) async {
+  Future<List<int>> GetBoxes(dh_id) async {
     Future<List<Label>> labelsFuture = DrillholesDatabase.instance.readAllLabels();
     List<Label> labels = await labelsFuture;
-    Future<List<Box>> boxListFuture = DrillholesDatabase.instance.CreateBoxList(labels, dh_id);
-    List<Box> boxes = await boxListFuture;
+    LinkedList<Label> linked_lables = await DrillholesDatabase.instance.labelsToLinkedList(labels);
+    Future<List<int>> boxListFuture = DrillholesDatabase.instance.CreateBoxListFromLinked(linked_lables, dh_id);
+    List<int> boxes = await boxListFuture;
     return boxes;
   }
 
@@ -87,6 +91,8 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
           backgroundColor: Colors.blue[900],
           child: Icon(Icons.add),
           onPressed: () async {
+            refreshLabels();
+            DrillholesDatabase.instance.createFirstLabel(widget.drillholeId);
             DrillholesDatabase.instance.createBox(widget.drillholeId);
             refreshLabels();
           },
@@ -94,31 +100,35 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
       );
 
   Future<Widget> buildLabels(BuildContext context) async {
-    Future<List<Box>> Futureboxes = GetBoxes(widget.drillholeId);
-    List<Box> boxes = await Futureboxes;
+    LinkedList<Label> linked_lables = await DrillholesDatabase.instance.labelsToLinkedList(labels);
+    Future<List<int>> Futureboxes = GetBoxes(widget.drillholeId);
+    List<int> boxes = await Futureboxes;
     return StaggeredGridView.countBuilder(
       padding: EdgeInsets.all(8),
-      itemCount: boxes.length,
+      itemCount: boxes.length-1,
       staggeredTileBuilder: (index) => StaggeredTile.fit(5),
       crossAxisCount: 4,
       mainAxisSpacing: 4,
       crossAxisSpacing: 4,
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        final box = boxes[index];
+        index = index+1;
+
 
         return GestureDetector(
           onTap: () async {
             // TODO: связь
             await Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => Scaffold(body: CasketScheme(boxes[index - 1].labels[0], boxes[index].labels[0]))));
+                .push(MaterialPageRoute(builder: (context) => Scaffold(body: KernLabelsPage(linked_lables.elementAt(boxes[index-1]),linked_lables.elementAt(boxes[index])))));
 
             refreshLabels();
           },
           child: LabelCardWidget(
-            box: box,
+            label: linked_lables.elementAt(boxes[index]),
             index: index,
           ),
+
+          // child: Text('${linked_lables.elementAt(box).depth}'),
         );
       },
     );

@@ -1,17 +1,18 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'dart:collection';
 
 import '../data_classes/drillhole.dart';
 import '../data_classes/label.dart';
 
 class Box {
-  List<Label> _labels = [];
+  late LinkedList<Label> _labels;
 
-  Box(List<Label> labels) {
+  Box(LinkedList<Label> labels) {
     _labels = labels;
   }
 
-  List<Label> get labels => _labels;
+  LinkedList<Label> get labels => _labels;
 }
 
 class DrillholesDatabase {
@@ -159,6 +160,18 @@ CREATE TABLE $tableLabels (
     return result.map((json) => Label.fromJson(json)).toList();
   }
 
+  Future<LinkedList<Label>> labelsToLinkedList(List<Label> labelList) async {
+    LinkedList<Label> linkedList = LinkedList<Label>();
+    labelList.forEach((label) {
+      linkedList.add(label);
+    });
+    return linkedList;
+  }
+
+  Future<List<Label>> linkedLabelsToList(LinkedList<Label> linkedList) async{
+    return linkedList.toList();
+}
+
   Future<int> updateLabel(Label label) async {
     final db = await instance.database;
 
@@ -188,31 +201,54 @@ CREATE TABLE $tableLabels (
     return count;
   }
 
-  Future<List<Box>> CreateBoxList(List<Label> labels, int dh_id) async {
+  Future<List<Box>> CreateBoxList(LinkedList<Label> labels, int dh_id) async {
     List<Box> boxList = [];
+    LinkedList<Label> filteredLabelList = LinkedList<Label>();
 
     for (int i = 0; i < labels.length; i++) {
-      Label currentList = labels[i];
-
-      List<Label> filteredLabelList = [];
+      Label currentList = labels.elementAt(i);
 
       if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
         filteredLabelList.add(currentList);
       }
+    }
 
-      if (filteredLabelList.isNotEmpty) {
-        List<Label> labels = [currentList];
-        Box box = Box(labels);
-        boxList.add(box);
-      }
+    if (filteredLabelList.isNotEmpty) {
+      Box box = Box(filteredLabelList);
+      boxList.add(box);
     }
 
     return boxList;
   }
 
+
+Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) async {
+  List<int> boxList = [];
+
+  for (int i = 0; i < labels.length; i++) {
+    Label currentList = labels.elementAt(i);
+
+    if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
+      boxList.add(i);
+    }
+  }
+
+  return boxList;
+}
+
+  Future createFirstLabel(int dh_id) async {
+    final db = await instance.database;
+
+    int count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $tableLabels WHERE drillhole_id = ?', [dh_id])) ?? 0;
+    if (count == 0) {
+      db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 0, 0, 0, 0, 0)', [dh_id]);
+      db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 0, 0, 0, 0)', [dh_id]);
+    }
+  }
+
   Future createBox(int dh_id) async {
     final db = await instance.database;
-    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 99999, 0, 0, 0)', [dh_id]);
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 99999, 300, 0, 0)', [dh_id]);
   }
 
   Future randominsert() async {
