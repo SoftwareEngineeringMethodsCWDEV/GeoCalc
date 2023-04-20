@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import '../data_classes/label.dart';
+
 
 import '../database_interaction/db_commands.dart';
 
 class LabelCardWidget extends StatelessWidget {
   LabelCardWidget({
     Key? key,
-    required this.box,
+    required this.label,
     required this.index,
   }) : super(key: key);
 
-  final Box box;
+  final Label label;
   final int index;
 
   @override
@@ -26,7 +28,7 @@ class LabelCardWidget extends StatelessWidget {
           children: [
             SizedBox(height: 4),
             Text(
-              'Box ${index + 1}',
+              'Box $index',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 25,
@@ -34,7 +36,7 @@ class LabelCardWidget extends StatelessWidget {
               ),
             ),
             Text(
-              'Глубина: ${box.labels[0].depth}',
+              'Глубина: ${label.depth}',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 17,
@@ -50,7 +52,7 @@ class LabelCardWidget extends StatelessWidget {
               ),
             ),
             Text(
-              'Выход керна: ${box.labels[0].core_output}',
+              'Выход керна: ${label.core_output}',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 17,
