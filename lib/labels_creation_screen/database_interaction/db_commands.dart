@@ -127,11 +127,11 @@ CREATE TABLE $tableLabels (
     db.close();
   }
 
-  Future<Label> createLabel(Label label) async {
+  Future<int> createLabel(Label label) async {
     final db = await instance.database;
 
     final id = await db.insert(tableLabels, label.toJson());
-    return label.copy(id: id);
+    return id;
   }
 
   Future<Label> readLabel(int id) async {
@@ -168,9 +168,9 @@ CREATE TABLE $tableLabels (
     return linkedList;
   }
 
-  Future<List<Label>> linkedLabelsToList(LinkedList<Label> linkedList) async{
+  Future<List<Label>> linkedLabelsToList(LinkedList<Label> linkedList) async {
     return linkedList.toList();
-}
+  }
 
   Future<int> updateLabel(Label label) async {
     final db = await instance.database;
@@ -221,20 +221,19 @@ CREATE TABLE $tableLabels (
     return boxList;
   }
 
+  Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) async {
+    List<int> boxList = [];
 
-Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) async {
-  List<int> boxList = [];
+    for (int i = 0; i < labels.length; i++) {
+      Label currentList = labels.elementAt(i);
 
-  for (int i = 0; i < labels.length; i++) {
-    Label currentList = labels.elementAt(i);
-
-    if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
-      boxList.add(i);
+      if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
+        boxList.add(i);
+      }
     }
-  }
 
-  return boxList;
-}
+    return boxList;
+  }
 
   Future createFirstLabel(int dh_id) async {
     final db = await instance.database;
@@ -248,7 +247,7 @@ Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) a
 
   Future createBox(int dh_id) async {
     final db = await instance.database;
-    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 99999, 300, 0, 0)', [dh_id]);
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 99999, 500, 0, 0)', [dh_id]);
   }
 
   Future randominsert() async {

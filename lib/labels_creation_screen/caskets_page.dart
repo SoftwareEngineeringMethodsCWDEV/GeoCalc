@@ -105,21 +105,20 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
     List<int> boxes = await Futureboxes;
     return StaggeredGridView.countBuilder(
       padding: EdgeInsets.all(8),
-      itemCount: boxes.length-1,
+      itemCount: boxes.length - 1,
       staggeredTileBuilder: (index) => StaggeredTile.fit(5),
       crossAxisCount: 4,
       mainAxisSpacing: 4,
       crossAxisSpacing: 4,
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        index = index+1;
-
+        index = index + 1;
 
         return GestureDetector(
           onTap: () async {
             // TODO: связь
-            await Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => Scaffold(body: KernLabelsPage(linked_lables.elementAt(boxes[index-1]),linked_lables.elementAt(boxes[index])))));
+            await Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => Scaffold(body: KernLabelsPage(linked_lables.elementAt(boxes[index - 1]), linked_lables.elementAt(boxes[index]), index))));
 
             refreshLabels();
           },
