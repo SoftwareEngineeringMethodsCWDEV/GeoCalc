@@ -43,9 +43,17 @@ class KernLabelSetupState extends State<KernLabelSetup> {
           const Text('Глубина: '),
           Expanded(
               child: TextFormField(
-            keyboardType: TextInputType.number,
-            initialValue: '${_current.depth}',
-          ))
+                  keyboardType: TextInputType.number,
+                  initialValue: '${_current.depth}',
+                  onChanged: (text) {
+                    if (text.isEmpty) {
+                      return;
+                    }
+                    final double parsed = double.parse(text);
+                    if (parsed >= _depthBefore && (_depthAfter == null || parsed <= _depthAfter!)) {
+                      _current.depth = parsed;
+                    }
+                  }))
         ],
       ),
       Row(
@@ -55,6 +63,11 @@ class KernLabelSetupState extends State<KernLabelSetup> {
               child: TextFormField(
             keyboardType: TextInputType.number,
             initialValue: '${_current.core_output}',
+            onChanged: (text) {
+              if (text.isNotEmpty) {
+                _current.core_output = double.parse(text);
+              }
+            },
           ))
         ],
       ),
@@ -113,7 +126,12 @@ class CasketCellData extends StatelessWidget {
               ElevatedButton(
                   onPressed: () {
                     //TODO: бд
-                    _reference.insertAfter(_dialogOutput); // TODO: может быть null
+                    if (_reference.next != null && _reference.next!.distance < _dialogOutput.distance) {
+                      _reference.next!.insertAfter(_dialogOutput);
+                    } else {
+                      _reference.insertAfter(_dialogOutput);
+                    }
+
                     _afterChangingCallback();
                     Navigator.of(context).pop();
                   },
@@ -171,3 +189,5 @@ class CasketCellData extends StatelessWidget {
         });
   }
 }
+
+//TODO: первая в ящике не работает - не заводится (и показывает не тот цвет)
