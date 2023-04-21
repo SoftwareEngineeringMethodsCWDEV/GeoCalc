@@ -127,11 +127,11 @@ CREATE TABLE $tableLabels (
     db.close();
   }
 
-  Future<int> createLabel(Label label) async {
+  Future<Label> createLabel(Label label) async {
     final db = await instance.database;
 
     final id = await db.insert(tableLabels, label.toJson());
-    return id;
+    return label.copy(id: id);
   }
 
   Future<Label> readLabel(int id) async {
@@ -154,7 +154,7 @@ CREATE TABLE $tableLabels (
   Future<List<Label>> readAllLabels() async {
     final db = await instance.database;
 
-    final orderBy = '${LabelFields.depth} ASC';
+    final orderBy = '${LabelFields.distance} ASC';
     final result = await db.rawQuery('SELECT * FROM $tableLabels ORDER BY $orderBy');
 
     return result.map((json) => Label.fromJson(json)).toList();
@@ -168,9 +168,9 @@ CREATE TABLE $tableLabels (
     return linkedList;
   }
 
-  Future<List<Label>> linkedLabelsToList(LinkedList<Label> linkedList) async {
+  Future<List<Label>> linkedLabelsToList(LinkedList<Label> linkedList) async{
     return linkedList.toList();
-  }
+}
 
   Future<int> updateLabel(Label label) async {
     final db = await instance.database;
@@ -221,19 +221,20 @@ CREATE TABLE $tableLabels (
     return boxList;
   }
 
-  Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) async {
-    List<int> boxList = [];
 
-    for (int i = 0; i < labels.length; i++) {
-      Label currentList = labels.elementAt(i);
+Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) async {
+  List<int> boxList = [];
 
-      if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
-        boxList.add(i);
-      }
+  for (int i = 0; i < labels.length; i++) {
+    Label currentList = labels.elementAt(i);
+
+    if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
+      boxList.add(i);
     }
-
-    return boxList;
   }
+
+  return boxList;
+}
 
   Future createFirstLabel(int dh_id) async {
     final db = await instance.database;
@@ -245,10 +246,49 @@ CREATE TABLE $tableLabels (
     }
   }
 
-  Future createBox(int dh_id) async {
+  Future createBox(int dh_id, rows) async {
     final db = await instance.database;
-    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 99999, 500, 0, 0)', [dh_id]);
+    db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 1, ?, 0, 0)', [dh_id, rows]);
   }
+
+  // Future createBox(int dh_id, rows, depth) async {
+  //   final db = await instance.database;
+  //   db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, ?, ?, 0, 0)', [dh_id, depth, rows]);
+  // }
+
+  Future<double> getMaxDistance(List<Label> labels, int dh_id) async {
+
+    if (labels.isEmpty) {
+      return Future.value(0);
+    }
+
+    List<Label> filteredLabels = labels.where((label) => label.drillhole_id == dh_id).toList();
+
+    if (filteredLabels.isEmpty) {
+      return Future.value(0);
+    }
+
+    Label maxDistanceLabel = filteredLabels.reduce((a, b) => a.distance > b.distance ? a : b);
+    return Future.value(maxDistanceLabel.distance.toDouble());
+  }
+
+  Future<double> getMaxDepth(List<Label> labels, int dh_id) async {
+    if (labels.isEmpty) {
+      return Future.value(0);
+    }
+
+    List<Label> filteredLabels = labels.where((label) => label.drillhole_id == dh_id).toList();
+
+    if (filteredLabels.isEmpty) {
+      return Future.value(0);
+    }
+
+    Label maxDepthLabel = filteredLabels.reduce((a, b) => a.depth > b.depth ? a : b);
+    return Future.value(maxDepthLabel.depth.toDouble());
+  }
+
+
+
 
   Future randominsert() async {
     final db = await instance.database;

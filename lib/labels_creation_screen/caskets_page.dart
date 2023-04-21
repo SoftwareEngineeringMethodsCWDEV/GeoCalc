@@ -9,7 +9,7 @@ import 'data_classes/drillhole.dart';
 import 'data_classes/label.dart';
 import 'drillhole_setup_page.dart';
 import 'widgets/label_widget.dart';
-import 'widgets/casket_scheme.dart';
+
 
 class DrillholeDetailPage extends StatefulWidget {
   final int drillholeId;
@@ -27,6 +27,7 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
   late Drillhole drillhole;
   late List<Label> labels;
   bool isLoading = false;
+  late int start_depth;
 
   @override
   void initState() {
@@ -37,10 +38,13 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
   }
 
   Future<List<int>> GetBoxes(dh_id) async {
-    Future<List<Label>> labelsFuture = DrillholesDatabase.instance.readAllLabels();
+    Future<List<Label>> labelsFuture =
+        DrillholesDatabase.instance.readAllLabels();
     List<Label> labels = await labelsFuture;
-    LinkedList<Label> linked_lables = await DrillholesDatabase.instance.labelsToLinkedList(labels);
-    Future<List<int>> boxListFuture = DrillholesDatabase.instance.CreateBoxListFromLinked(linked_lables, dh_id);
+    LinkedList<Label> linked_lables =
+        await DrillholesDatabase.instance.labelsToLinkedList(labels);
+    Future<List<int>> boxListFuture = DrillholesDatabase.instance
+        .CreateBoxListFromLinked(linked_lables, dh_id);
     List<int> boxes = await boxListFuture;
     return boxes;
   }
@@ -48,7 +52,8 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
   Future refreshDrillhole() async {
     setState(() => isLoading = true);
 
-    this.drillhole = await DrillholesDatabase.instance.readDrillhole(widget.drillholeId);
+    this.drillhole =
+        await DrillholesDatabase.instance.readDrillhole(widget.drillholeId);
 
     setState(() => isLoading = false);
   }
@@ -73,10 +78,12 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
         body: isLoading
             ? Center(child: CircularProgressIndicator())
             : Padding(
-                padding: EdgeInsets.only(left: 100, top: 12, right: 12, bottom: 12),
+                padding:
+                    EdgeInsets.only(left: 100, top: 12, right: 12, bottom: 12),
                 child: FutureBuilder<Widget>(
                   future: buildLabels(context),
-                  builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                  builder:
+                      (BuildContext context, AsyncSnapshot<Widget> snapshot) {
                     if (snapshot.hasData) {
                       return snapshot.data!;
                     } else if (snapshot.hasError) {
@@ -87,20 +94,63 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
                   },
                 ),
               ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blue[900],
-          child: Icon(Icons.add),
-          onPressed: () async {
-            refreshLabels();
-            DrillholesDatabase.instance.createFirstLabel(widget.drillholeId);
-            DrillholesDatabase.instance.createBox(widget.drillholeId);
-            refreshLabels();
+        floatingActionButton: Builder(
+          builder: (BuildContext context) {
+            return FloatingActionButton(
+              backgroundColor: Colors.blue[900],
+              child: Icon(Icons.add),
+              onPressed: () async {
+                refreshLabels();
+                int? row_count;
+                TextEditingController rowsController =
+                    TextEditingController(text: '');
+                await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Кол-во рядов ящика:"),
+                      content: TextField(
+                        controller: rowsController,
+                        keyboardType: TextInputType.number,
+                        onSubmitted: (String text) {
+                          row_count = int.parse(rowsController.text);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("Cancel"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text("OK"),
+                          onPressed: () async {
+                            Future<double> max_distance_future = DrillholesDatabase.instance.getMaxDistance(labels, widget.drillholeId);
+                            double max_distance = await max_distance_future;
+                              row_count = int.parse(rowsController.text) * 100;
+                              DrillholesDatabase.instance
+                                  .createFirstLabel(widget.drillholeId);
+                              DrillholesDatabase.instance
+                                  .createBox(widget.drillholeId, (row_count!+max_distance));
+                              refreshLabels();
+                              Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            );
           },
         ),
       );
 
   Future<Widget> buildLabels(BuildContext context) async {
-    LinkedList<Label> linked_lables = await DrillholesDatabase.instance.labelsToLinkedList(labels);
+    LinkedList<Label> linked_lables =
+        await DrillholesDatabase.instance.labelsToLinkedList(labels);
     Future<List<int>> Futureboxes = GetBoxes(widget.drillholeId);
     List<int> boxes = await Futureboxes;
     return StaggeredGridView.countBuilder(
@@ -118,16 +168,26 @@ class _DrillholeDetailPageState extends State<DrillholeDetailPage> {
           onTap: () async {
             // TODO: связь
             await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => Scaffold(body: KernLabelsPage(linked_lables.elementAt(boxes[index - 1]), linked_lables.elementAt(boxes[index]), index))));
+                builder: (context) => Scaffold(
+                    body: KernLabelsPage(
+                        linked_lables.elementAt(boxes[index - 1]),
+                        linked_lables.elementAt(boxes[index]),
+                        index))));
 
             refreshLabels();
           },
           child: LabelCardWidget(
             label: linked_lables.elementAt(boxes[index]),
             index: index,
+            row_count: (linked_lables.elementAt(boxes[index]).distance - linked_lables.elementAt(boxes[index-1]).distance).toInt(),
           ),
 
-          // child: Text('${linked_lables.elementAt(box).depth}'),
+          // child: Row(
+          //   children: [
+          //     Text('${linked_lables.elementAt(boxes[index]).depth}; '),
+          //     Text('${linked_lables.elementAt(boxes[index]).distance}')
+          //   ],
+          // ),
         );
       },
     );

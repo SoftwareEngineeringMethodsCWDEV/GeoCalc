@@ -9,10 +9,12 @@ class LabelCardWidget extends StatelessWidget {
     Key? key,
     required this.label,
     required this.index,
+    required this.row_count,
   }) : super(key: key);
 
   final Label label;
   final int index;
+  final int row_count;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class LabelCardWidget extends StatelessWidget {
               ),
             ),
             Text(
-              'Кол-во рядов: ???',
+              'Кол-во рядов: ${(row_count/100).toInt()}',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 17,
