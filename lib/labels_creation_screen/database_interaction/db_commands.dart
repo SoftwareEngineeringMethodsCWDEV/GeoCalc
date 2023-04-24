@@ -127,11 +127,12 @@ CREATE TABLE $tableLabels (
     db.close();
   }
 
-  Future<Label> createLabel(Label label) async {
+  Future<int> createLabel(Label label) async {
     final db = await instance.database;
 
     final id = await db.insert(tableLabels, label.toJson());
-    return label.copy(id: id);
+    return id;
+    //return label.copy(id: id);
   }
 
   Future<Label> readLabel(int id) async {
@@ -151,26 +152,24 @@ CREATE TABLE $tableLabels (
     }
   }
 
-  Future<List<Label>> readAllLabels() async {
+  Future<List<Label>> readAllLabels(int drillholeId) async {
     final db = await instance.database;
 
-    final orderBy = '${LabelFields.distance} ASC';
-    final result = await db.rawQuery('SELECT * FROM $tableLabels ORDER BY $orderBy');
+    final orderBy = '${LabelFields.distance} ASC, ${LabelFields.is_Imaginary} ASC';
+    final result = await db.rawQuery('SELECT * FROM $tableLabels WHERE ${LabelFields.drillhole_id} = $drillholeId ORDER BY $orderBy');
 
     return result.map((json) => Label.fromJson(json)).toList();
   }
 
   Future<LinkedList<Label>> labelsToLinkedList(List<Label> labelList) async {
     LinkedList<Label> linkedList = LinkedList<Label>();
-    labelList.forEach((label) {
-      linkedList.add(label);
-    });
+    linkedList.addAll(labelList);
     return linkedList;
   }
 
-  Future<List<Label>> linkedLabelsToList(LinkedList<Label> linkedList) async{
+  Future<List<Label>> linkedLabelsToList(LinkedList<Label> linkedList) async {
     return linkedList.toList();
-}
+  }
 
   Future<int> updateLabel(Label label) async {
     final db = await instance.database;
@@ -221,27 +220,26 @@ CREATE TABLE $tableLabels (
     return boxList;
   }
 
+  Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) async {
+    List<int> boxList = [];
 
-Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) async {
-  List<int> boxList = [];
+    for (int i = 0; i < labels.length; i++) {
+      Label currentList = labels.elementAt(i);
 
-  for (int i = 0; i < labels.length; i++) {
-    Label currentList = labels.elementAt(i);
-
-    if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
-      boxList.add(i);
+      if (currentList.drillhole_id == dh_id && currentList.is_Imaginary == true) {
+        boxList.add(i);
+      }
     }
-  }
 
-  return boxList;
-}
+    return boxList;
+  }
 
   Future createFirstLabel(int dh_id) async {
     final db = await instance.database;
 
     int count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $tableLabels WHERE drillhole_id = ?', [dh_id])) ?? 0;
     if (count == 0) {
-      db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 0, 0, 0, 0, 0)', [dh_id]);
+      db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 0, 0, 0, 0, 4288585374)', [dh_id]);
       db.rawInsert('INSERT INTO Label(drillhole_id, is_Imaginary, depth, distance, core_output, color) VALUES(?, 1, 0, 0, 0, 0)', [dh_id]);
     }
   }
@@ -257,7 +255,6 @@ Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) a
   // }
 
   Future<double> getMaxDistance(List<Label> labels, int dh_id) async {
-
     if (labels.isEmpty) {
       return Future.value(0);
     }
@@ -286,9 +283,6 @@ Future<List<int>> CreateBoxListFromLinked(LinkedList<Label> labels, int dh_id) a
     Label maxDepthLabel = filteredLabels.reduce((a, b) => a.depth > b.depth ? a : b);
     return Future.value(maxDepthLabel.depth.toDouble());
   }
-
-
-
 
   Future randominsert() async {
     final db = await instance.database;

@@ -23,13 +23,6 @@ class _DrillholesPageState extends State<DrillholesPage> {
     refreshDrillholes();
   }
 
-  @override
-  void dispose() {
-    // DrillholesDatabase.instance.close();
-
-    // super.dispose();
-  }
-
   Future refreshDrillholes() async {
     setState(() => isLoading = true);
 
@@ -41,17 +34,17 @@ class _DrillholesPageState extends State<DrillholesPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'Скважины',
             style: TextStyle(fontSize: 24),
           ),
-          actions: [Icon(Icons.search), SizedBox(width: 12)],
+          actions: const [Icon(Icons.search), SizedBox(width: 12)],
         ),
         body: Center(
           child: isLoading
-              ? CircularProgressIndicator()
+              ? const CircularProgressIndicator()
               : drillholes.isEmpty
-                  ? Text(
+                  ? const Text(
                       'No Drillholes',
                       style: TextStyle(color: Colors.black, fontSize: 24),
                     )
@@ -59,10 +52,10 @@ class _DrillholesPageState extends State<DrillholesPage> {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.blue,
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AddEditDrillholePage()),
+              MaterialPageRoute(builder: (context) => const AddEditDrillholePage()),
             );
 
             refreshDrillholes();
@@ -71,9 +64,9 @@ class _DrillholesPageState extends State<DrillholesPage> {
       );
 
   Widget buildDrillholes() => StaggeredGridView.countBuilder(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         itemCount: drillholes.length,
-        staggeredTileBuilder: (index) => StaggeredTile.fit(5),
+        staggeredTileBuilder: (index) => const StaggeredTile.fit(5),
         crossAxisCount: 4,
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
@@ -83,7 +76,7 @@ class _DrillholesPageState extends State<DrillholesPage> {
           return GestureDetector(
             onTap: () async {
               await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => DrillholeDetailPage(drillholeId: drillhole.id!),
+                builder: (context) => DrillholeDetailPage(drillholeId: drillhole.id!, drillhole: drillhole),
               ));
 
               refreshDrillholes();

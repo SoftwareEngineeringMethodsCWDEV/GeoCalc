@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data_classes/label.dart';
 
-
-import '../database_interaction/db_commands.dart';
-
 class LabelCardWidget extends StatelessWidget {
   LabelCardWidget({
     Key? key,
@@ -19,19 +16,19 @@ class LabelCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       color: Colors.blue,
       child: Container(
-        constraints: BoxConstraints(minHeight: 100),
-        padding: EdgeInsets.all(8),
+        constraints: const BoxConstraints(minHeight: 100),
+        padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
-              'Box $index',
-              style: TextStyle(
+              'Ящик $index',
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -39,15 +36,15 @@ class LabelCardWidget extends StatelessWidget {
             ),
             Text(
               'Глубина: ${label.depth}',
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              'Кол-во рядов: ${(row_count/100).toInt()}',
-              style: TextStyle(
+              'Кол-во рядов: ${(row_count / 100).toInt()}',
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -55,7 +52,7 @@ class LabelCardWidget extends StatelessWidget {
             ),
             Text(
               'Выход керна: ${label.core_output}',
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
