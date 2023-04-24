@@ -2,6 +2,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter/material.dart';
 
 import 'data_classes/label.dart';
+import 'database_interaction/db_commands.dart';
 
 class KernLabelSetup extends StatefulWidget {
   final Label _initial;
@@ -83,14 +84,16 @@ class KernLabelSetupState extends State<KernLabelSetup> {
   void pickColor(BuildContext context) => showDialog(
       context: context,
       builder: (context) => AlertDialog(
-          title: const Text('Цвет'),
-          content: Column(children: [
-            ColorPicker(pickerColor: _current.color, onColorChanged: (color) => setState(() => _current.color = color)),
-            // TextButton(
-            //   child: const Text('Выбрать'),
-            //   onPressed: () => Navigator.of(context).pop,
-            // )
-          ])));
+            title: const Text('Цвет'),
+            content:
+                SingleChildScrollView(child: MaterialPicker(pickerColor: _current.color, onColorChanged: (color) => setState(() => _current.color = color))),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Выбрать'),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+          ));
 }
 
 class CasketCellData extends StatelessWidget {
@@ -103,7 +106,7 @@ class CasketCellData extends StatelessWidget {
 
   CasketCellData(this._reference, this._isLabelKeeper, this._distance, this._afterChangingCallback, {super.key})
       : _dialogOutput = Label(
-            id: null,
+            id: (_isLabelKeeper ? _reference.id : null),
             drillhole_id: _reference.drillhole_id,
             is_Imaginary: false,
             distance: _distance,
@@ -124,8 +127,8 @@ class CasketCellData extends StatelessWidget {
             KernLabelSetup(_dialogOutput, _reference.depth, (_reference.nextReal() == null ? null : _reference.nextReal()!.depth), _distance),
             Row(children: [
               ElevatedButton(
-                  onPressed: () {
-                    //TODO: бд
+                  onPressed: () async {
+                    _dialogOutput.id = await DrillholesDatabase.instance.createLabel(_dialogOutput);
                     if (_reference.next != null && _reference.next!.distance < _dialogOutput.distance) {
                       _reference.next!.insertAfter(_dialogOutput);
                     } else {
@@ -151,8 +154,8 @@ class CasketCellData extends StatelessWidget {
               children: [
                 const Text('Модификация'),
                 ElevatedButton(
-                    onPressed: () {
-                      //TODO: бд
+                    onPressed: () async {
+                      await DrillholesDatabase.instance.deleteLabel(_dialogOutput.id!);
                       _reference.unlink();
                       _afterChangingCallback();
                       Navigator.of(context).pop();
@@ -163,8 +166,8 @@ class CasketCellData extends StatelessWidget {
             KernLabelSetup(_dialogOutput, _reference.depth, (_reference.nextReal() == null ? null : _reference.nextReal()!.depth), _distance),
             Row(children: [
               ElevatedButton(
-                  onPressed: () {
-                    //TODO: бд
+                  onPressed: () async {
+                    await DrillholesDatabase.instance.updateLabel(_dialogOutput);
                     _reference.copyDataFrom(_dialogOutput);
                     _afterChangingCallback();
                     Navigator.of(context).pop();
@@ -189,5 +192,3 @@ class CasketCellData extends StatelessWidget {
         });
   }
 }
-
-//TODO: первая в ящике не работает - не заводится (и показывает не тот цвет)

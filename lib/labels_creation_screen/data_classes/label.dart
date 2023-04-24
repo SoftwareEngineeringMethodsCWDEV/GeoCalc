@@ -124,6 +124,7 @@ class Label extends LinkedListEntry<Label> {
   }
 
   static double extrapolateDepth(Label before, int onDistance) {
+    if (before.distance == 0) return 0;
     double scale = (before.depth) / (before.distance);
     return onDistance * scale;
   }

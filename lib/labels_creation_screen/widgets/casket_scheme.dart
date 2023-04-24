@@ -51,7 +51,7 @@ class RulerRowPainter extends CustomPainter {
     while (drawLabel != _afterLabel) {
       final textPainter = TextPainter(text: TextSpan(text: drawLabel!.depth.toStringAsFixed(2), style: textStyle), textDirection: TextDirection.ltr);
       textPainter.layout(minWidth: 0, maxWidth: size.width);
-      final Offset labelPlace = Offset(size.width * (drawLabel.distance % 100) / 100, size.height / 2);
+      final Offset labelPlace = Offset(size.width * (drawLabel.distance % 100) / 100, size.height / 3);
       textPainter.paint(canvas, labelPlace);
 
       drawLabel = drawLabel.nextReal();
@@ -115,7 +115,7 @@ class CasketSchemeState extends State<CasketScheme> {
               '\n До: ${afterRowLabel.depth.toStringAsFixed(2)} м'
               '\n Пр: ${diff.toStringAsFixed(2)} м'
               '\n В/К: ${(afterRowLabel.core_output).toStringAsFixed(2)} м'
-              '\n %:  ${(afterRowLabel.core_output / diff).toStringAsFixed(2)}'; // TODO: так ли?
+              '\n %:  ${((afterRowLabel.core_output / diff) * 100).toStringAsFixed(2)}';
           tableRow.add(Container(
               decoration: BoxDecoration(border: Border.all(color: Colors.black /*invert(afterRowLabel.color)*/), color: afterRowLabel.color),
               child: Tooltip(

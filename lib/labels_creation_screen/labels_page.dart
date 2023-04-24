@@ -42,9 +42,10 @@ class KernLabelsPageState extends State<KernLabelsPage> {
       _endFake.depth = Label.calcDepthBetween(_endFake.prevReal()!, _endFake.nextReal()!, _endFake.distance);
     } else if (_endFake.previous! != _startFake) {
       _endFake.depth = Label.extrapolateDepth(_endFake.prevReal()!, _endFake.distance);
-    } else {
-      _endFake.copyDataFrom(_startFake);
     }
+    // } else {
+    //   _endFake.copyDataFrom(_startFake);
+    // }
   }
 
   void recalcCoreOutput() {
@@ -73,17 +74,17 @@ class KernLabelsPageState extends State<KernLabelsPage> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]);
 
     return Scaffold(
+        appBar: AppBar(title: Text('Ящик $_casketIndex')),
         body: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
-      Text('Ящик $_casketIndex'),
-      Text('${(_startFake.depth == _endFake.depth ? ' ' : _startFake.depth)}->     '),
-      Container(decoration: BoxDecoration(border: Border.all(color: Colors.black)), child: CasketScheme(_startFake, _endFake, redrawCasketInfo)),
-      Text('->${(_startFake.depth == _endFake.depth ? ' ' : _endFake.depth)}     '),
-      const Text(' '),
-      Text('Средний Core Output ящика: ${_endFake.core_output}'),
-      const Text(' '),
-      const Text(' '),
-      const Text('Нажать на ячейку чтобы посмотреть; двойной щелчок чтобы добавить/изменить', style: TextStyle(color: Colors.grey)),
-    ]));
+          Text('${(_startFake.depth == _endFake.depth ? ' ' : _startFake.depth.toStringAsFixed(2))}→     '),
+          Container(decoration: BoxDecoration(border: Border.all(color: Colors.black)), child: CasketScheme(_startFake, _endFake, redrawCasketInfo)),
+          Text('→${(_startFake.depth == _endFake.depth ? ' ' : _endFake.depth.toStringAsFixed(2))}     '),
+          const Text(' '),
+          Text('Средний Выход Керна для ящика: ${_endFake.core_output.toStringAsFixed(2)}'),
+          const Text(' '),
+          const Text(' '),
+          const Text('Нажать на ячейку чтобы посмотреть; двойной щелчок чтобы добавить/изменить', style: TextStyle(color: Colors.grey)),
+        ]));
   }
 
   @override
